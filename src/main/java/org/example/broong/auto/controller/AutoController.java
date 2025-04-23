@@ -7,15 +7,17 @@ import org.example.broong.auto.dto.response.SignupResponseDto;
 import org.example.broong.auto.service.AutoService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auto")
 public class AutoController {
 
     private final AutoService autoService;
 
-    @PostMapping("{auto/signup}")
+    @PostMapping("/signup")
     public SignupResponseDto signup(@Valid @RequestBody SignupRequestDto requestDto){
         return autoService.signup(requestDto);
     }
