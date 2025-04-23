@@ -1,4 +1,4 @@
-package org.example.broong.domain.auto.dto.request;
+package org.example.broong.domain.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,12 +6,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.user.enums.UserType;
 
+public class AuthRequestDto {
 
-
-public class AutoRequestDto {
-
+    // 회원가입
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -33,9 +31,19 @@ public class AutoRequestDto {
 
     }
 
+    // 로그인
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Signin {
 
-    }
+        @NotBlank
+        @Email
+        private String email;
 
+        @NotBlank
+        private Singup password;
+
+    }
 
 }
