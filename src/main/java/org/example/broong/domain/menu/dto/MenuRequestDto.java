@@ -2,12 +2,26 @@ package org.example.broong.domain.menu.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Getter
 @Setter
 public class MenuRequestDto {
-    private Long storeId;        // 가게 식별자
-    private String name;         // 메뉴 이름
-    private String price;        // 가격 (문자열로 저장 중)
-    private String menuState;    // 메뉴 상태 (예: AVAILABLE, DELETED 등)
+
+    @NotNull(message = "storeId는 필수 입력 값입니다.")
+    private Long storeId;
+
+    @NotBlank(message = "메뉴 이름은 필수입니다.")
+    @Size(min = 2, max = 20, message = "메뉴 이름은 2자 이상 20자 이하여야 합니다.")
+    private String name;
+
+    @NotBlank(message = "가격은 필수입니다.")
+    @Size(max = 10, message = "가격은 10자 이하여야 합니다.")
+    private String price;
+
+    @NotBlank(message = "메뉴 상태는 필수입니다.")
+    private String menuState;
+
 }

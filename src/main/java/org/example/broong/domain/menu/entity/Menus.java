@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.broong.domain.menu.enums.MenuState;
 
 @Entity
 @Getter
@@ -18,6 +19,7 @@ public class Menus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    // TODO: Stores 엔티티 생성 후 @ManyToOne 관계로 변경할 것
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "store_id", nullable = false)
     //private Stores stores;
@@ -32,7 +34,8 @@ public class Menus {
     @Column(nullable = false)
     private String price;
 
-    @Column(nullable = false)
-    private String menu_state;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "menu_state", nullable = false)
+    private MenuState menuState;
 
 }
