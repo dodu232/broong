@@ -1,0 +1,25 @@
+package org.example.broong.domain.order.dto.response;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.example.broong.domain.order.Enum.OrderStatus;
+
+import java.time.LocalDateTime;
+
+@Getter
+public class OrderResponseDto {
+    private final Long id;
+    private final Long storeId;
+    private final Integer totalPrice;
+    private final OrderStatus status;
+    private final LocalDateTime updatedAt;
+
+    public OrderResponseDto(Long id, Long storeId, Integer totalPrice, OrderStatus status, LocalDateTime updatedAt) {
+        this.id = id;
+        this.storeId = storeId;
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.updatedAt = updatedAt;
+    }
+
+}
