@@ -1,4 +1,4 @@
-package org.example.broong.user.entity;
+package org.example.broong.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
