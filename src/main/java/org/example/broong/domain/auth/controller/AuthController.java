@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auto")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -26,11 +26,11 @@ public class AuthController {
 
     }
 
-//    @PostMapping("/signin")
-//    public ResponseEntity<AutoResponseDto> signin(@RequestBody AutoRequestDto.Signin requestDto){
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(autoService.signin(requestDto));
-//
-//    }
+    @PostMapping("/signin")
+    public ResponseEntity<AuthResponseDto> signin(@RequestBody AuthRequestDto.Signin requestDto){
+
+        return ResponseEntity.status(HttpStatus.OK).body(authService.signin(requestDto));
+
+    }
 
 }

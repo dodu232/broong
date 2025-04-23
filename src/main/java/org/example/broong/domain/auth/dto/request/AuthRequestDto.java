@@ -42,7 +42,7 @@ public class AuthRequestDto {
         private String email;
 
         @NotBlank
-        private Singup password;
+        private String password;
 
     }
 
