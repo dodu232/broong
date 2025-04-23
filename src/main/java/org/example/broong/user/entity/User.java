@@ -33,13 +33,20 @@ public class User extends Timestamped {
 
     private String name;
 
-    private int point;
+    private int point = 0;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
+
+    public User(String email, String password, String name, UserType userType){
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.userType = userType;
+    }
 
     public void changePassword(String password){
         this.password = password;
