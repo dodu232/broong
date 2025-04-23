@@ -38,7 +38,7 @@ public class AutoService {
                 userType
         );
 
-        newUser.setPoint(100);
+        newUser.addPoint(100);
 
         User savedUser = userRepository.save(newUser);
 
