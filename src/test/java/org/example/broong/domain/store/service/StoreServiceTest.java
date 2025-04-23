@@ -16,6 +16,7 @@ import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,14 @@ class StoreServiceTest {
     @InjectMocks
     private StoreService storeService;
 
+    @Mock
+    private UserService userService;
+
     @Test
     @DisplayName("가게를 3개 등록한 상태면 api 예외 호출")
     void checkStoreCount(){
         // given
-        long ownerId = 1L;
+        long userId = 1L;
 
         StoreRequestDto.Add dto = new StoreRequestDto.Add(
             "새가게",
@@ -54,16 +58,16 @@ class StoreServiceTest {
                 .openingTime(LocalTime.of(9, 0))
                 .closingTime(LocalTime.of(21, 0))
                 .minOrderPrice(10000)
-                .ownerId(ownerId)
+                .user(userService.getById(userId))
                 .build()
             )
             .collect(Collectors.toList());
 
-        given(storeRepository.findByOwnerId(ownerId)).willReturn(dummyStores);
+        given(storeRepository.findByUserId(userId)).willReturn(dummyStores);
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> storeService.addStore(dto, ownerId));
-        verify(storeRepository, times(1)).findByOwnerId(anyLong());
+        ApiException exception = assertThrows(ApiException.class, () -> storeService.addStore(dto, userId));
+        verify(storeRepository, times(1)).findByUserId(anyLong());
         assertEquals("가게는 3개까지 운영 가능합니다.", exception.getMessage());
     }
 
