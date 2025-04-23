@@ -9,4 +9,6 @@ public class PasswordEncoder {
     public String encode(String rawPassword){
         return BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, rawPassword.toCharArray());
     }
+
+//    public String matches(String rawPassword)
 }
