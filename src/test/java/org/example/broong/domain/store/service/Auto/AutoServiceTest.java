@@ -1,15 +1,15 @@
-package org.example.broong.Auto;
+package org.example.broong.domain.store.service.Auto;
 
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.example.broong.auto.dto.request.SignupRequestDto;
-import org.example.broong.auto.service.AutoService;
+import org.example.broong.domain.auto.dto.request.SignupRequestDto;
+import org.example.broong.domain.auto.service.AutoService;
 import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
-import org.example.broong.user.repository.UserRepository;
+import org.example.broong.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

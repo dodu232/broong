@@ -1,6 +1,5 @@
-package org.example.broong.user.entity;
+package org.example.broong.domain.user.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,14 +13,14 @@ import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.common.entity.Timestamped;
-import org.example.broong.user.enums.UserType;
+import org.example.broong.domain.common.BaseEntity;
+import org.example.broong.domain.user.enums.UserType;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
-public class User extends Timestamped {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

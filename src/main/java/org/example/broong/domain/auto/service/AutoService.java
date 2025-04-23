@@ -1,15 +1,15 @@
-package org.example.broong.auto.service;
+package org.example.broong.domain.auto.service;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.auto.dto.request.SignupRequestDto;
-import org.example.broong.auto.dto.response.SignupResponseDto;
+import org.example.broong.domain.auto.dto.request.SignupRequestDto;
+import org.example.broong.domain.auto.dto.response.SignupResponseDto;
 import org.example.broong.config.JwtUtil;
 import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
-import org.example.broong.user.entity.User;
-import org.example.broong.user.enums.UserType;
-import org.example.broong.user.repository.UserRepository;
+import org.example.broong.domain.user.entity.User;
+import org.example.broong.domain.user.enums.UserType;
+import org.example.broong.domain.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

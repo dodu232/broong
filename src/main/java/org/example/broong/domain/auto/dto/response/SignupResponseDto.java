@@ -1,4 +1,4 @@
-package org.example.broong.auto.dto.response;
+package org.example.broong.domain.auto.dto.response;
 
 import lombok.Getter;
 

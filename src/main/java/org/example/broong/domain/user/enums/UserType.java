@@ -1,4 +1,4 @@
-package org.example.broong.user.enums;
+package org.example.broong.domain.user.enums;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 
