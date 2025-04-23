@@ -2,10 +2,11 @@ package org.example.broong.domain.auto.service;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.auto.dto.request.SignupRequestDto;
-import org.example.broong.domain.auto.dto.response.SignupResponseDto;
+import org.example.broong.domain.auto.dto.request.AutoRequestDto;
+import org.example.broong.domain.auto.dto.response.AutoResponseDto;
 import org.example.broong.config.JwtUtil;
 import org.example.broong.config.PasswordEncoder;
+import org.example.broong.domain.user.entity.User.UserBuilder;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
@@ -21,7 +22,7 @@ public class AutoService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public SignupResponseDto signup(SignupRequestDto requestDto) {
+    public AutoResponseDto.Signup signup(AutoRequestDto.Singup requestDto) {
 
         if(userRepository.existsByEmail(requestDto.getEmail())){
             throw new ApiException(HttpStatus.CONFLICT, INVALID_PARAMETER, "이미 존재하는 이메일 입니다.");
@@ -31,12 +32,12 @@ public class AutoService {
 
         UserType userType = UserType.of(requestDto.getUserType());
 
-        User newUser = new User(
-                requestDto.getName(),
-                requestDto.getEmail(),
-                encodedPassword,
-                userType
-        );
+        User newUser = User.builder()
+                .name(requestDto.getName())
+                .email(requestDto.getEmail())
+                .password(encodedPassword)
+                .userType(userType)
+                .build();
 
         newUser.addPoint(100);
 
@@ -45,7 +46,7 @@ public class AutoService {
         String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(),
                 savedUser.getUserType());
 
-        return new SignupResponseDto(bearerToken);
+        return new AutoResponseDto.Signup(bearerToken);
 
     }
 }

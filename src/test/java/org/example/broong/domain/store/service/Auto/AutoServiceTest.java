@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.example.broong.domain.auto.dto.request.SignupRequestDto;
+import org.example.broong.domain.auto.dto.request.AutoRequestDto;
 import org.example.broong.domain.auto.service.AutoService;
 import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
@@ -35,7 +35,7 @@ public class AutoServiceTest {
         // given
         String email = "exisiting@example.com";
 
-        SignupRequestDto requestDto = new SignupRequestDto("user" , email , "Password12","USER");
+        AutoRequestDto.Singup requestDto = new AutoRequestDto.Singup("user" , email , "Password12","USER");
 
         given(userRepository.existsByEmail(email)).willReturn(true);
 
