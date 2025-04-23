@@ -56,7 +56,7 @@ public class User extends Timestamped {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void setPoint(int point){
+    public void addPoint(int point){
         this.point = this.point + point;
     }
 
