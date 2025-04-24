@@ -3,6 +3,7 @@ package org.example.broong.domain.store.service;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final StoreRepositoryImpl storeRepositoryImpl;
     private final UserService userService;
 
     public void addStore(StoreRequestDto.Add dto, long userId) {
@@ -48,6 +48,23 @@ public class StoreService {
 
     public Slice<StoreResponseDto.Get> getStoreList(Category category, Pageable pageable) {
         return storeRepository.findAllByCategory(category, pageable);
+    }
+
+    public List<StoreResponseDto.Get> getStoreListByUserId(long userId){
+        List<Store> findStore = storeRepository.findByUserId(userId);
+
+        if(findStore.isEmpty()){
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "보유 중인 가게가 없습니다.");
+        }
+
+        return  findStore.stream()
+            .map(e -> new StoreResponseDto.Get(
+                e.getName(),
+                e.getOpeningTime().toString(),
+                e.getClosingTime().toString(),
+                e.getMinOrderPrice()
+            ))
+            .collect(Collectors.toList());
     }
 
     public static LocalTime parseLocalTime(String time) {

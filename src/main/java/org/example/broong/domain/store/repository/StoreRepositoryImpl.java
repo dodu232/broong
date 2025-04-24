@@ -15,27 +15,28 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
-public class StoreRepositoryImpl implements StoreRepositoryCustom{
+public class StoreRepositoryImpl implements StoreRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<StoreResponseDto.Get> findAllByCategory(Category category, Pageable pageable){
+    public Slice<StoreResponseDto.Get> findAllByCategory(Category category, Pageable pageable) {
         QStore store = QStore.store;
 
         List<Store> entities = queryFactory
             .selectFrom(store)
             .where(
                 store.category.eq(category.getDisplayName())
-                )
+                    .and(store.deletedAt.isNull())
+            )
             .offset(pageable.getOffset())
-            .limit(pageable.getPageSize()+1)
+            .limit(pageable.getPageSize() + 1)
             .orderBy(store.createdAt.desc())
             .fetch();
 
         boolean hasNext = entities.size() > pageable.getPageSize();
-        if(hasNext) {
-            entities.remove(entities.size()-1 );
+        if (hasNext) {
+            entities.remove(entities.size() - 1);
         }
 
         List<StoreResponseDto.Get> dtos = entities.stream()
