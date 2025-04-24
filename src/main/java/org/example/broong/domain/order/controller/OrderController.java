@@ -2,15 +2,14 @@ package org.example.broong.domain.order.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
+import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
 import org.example.broong.domain.order.service.OrderService;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +18,13 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
+    @PostMapping("orders")
     public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal User user, @Valid @RequestBody OrderCreateRequestDto dto) {
         return ResponseEntity.ok(OrderService.createOrder(user.getId(),dto));
+    }
+
+    @PutMapping("orders/{drderId}/cancel")
+    public ResponseEntity<OrderStatusResponseDto> cancelOrder(@PathVariable Long drderId) {
+        return ResponseEntity.ok(OrderService.cancelOrder(user.getId), orderId);
     }
 }

@@ -58,4 +58,5 @@ public class Store extends BaseEntity {
         this.minOrderPrice = minOrderPrice;
         this.ownerId = ownerId;
     }
+
 }

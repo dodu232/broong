@@ -11,15 +11,13 @@ public class OrderResponseDto {
     private final Long id;
     private final Long storeId;
     private final Integer totalPrice;
-    private final OrderStatus status;
-    private final LocalDateTime updatedAt;
 
-    public OrderResponseDto(Long id, Long storeId, Integer totalPrice, OrderStatus status, LocalDateTime updatedAt) {
+
+    public OrderResponseDto(Long id, Long storeId, Integer totalPrice) {
         this.id = id;
         this.storeId = storeId;
         this.totalPrice = totalPrice;
-        this.status = status;
-        this.updatedAt = updatedAt;
+
     }
 
 }
