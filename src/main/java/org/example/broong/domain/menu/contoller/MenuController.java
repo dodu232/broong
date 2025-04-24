@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 @RestController
@@ -24,13 +26,13 @@ public class MenuController {
 
     @PostMapping("/{menuId}")
     public ResponseEntity<MenuResponseDto> createMenu(@PathVariable Long storeId,
-                                                      @RequestBody MenuRequestDto dto/*,
-                                                      @AuthenticationPrincipal CustomUserDetails userDetails*/) {
+                                                      @RequestBody MenuRequestDto dto,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
 
-        MenuResponseDto response = menuService.createMenu(store, dto/*, userDetails.getUserId(), userDetails.getUserType()*/);
+        MenuResponseDto response = menuService.createMenu(store, dto, userDetails.getUserId(), userDetails.getUserType());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -38,15 +40,15 @@ public class MenuController {
     public ResponseEntity<MenuResponseDto> updateMenu(
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuRequestDto dto/*,
-            @AuthenticationPrincipal CustomUserDetails userDetails*/) {
+            @RequestBody MenuRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MenuResponseDto response = menuService.updateMenu(
                 storeId,
                 menuId,
-                dto/*,
+                dto,
                 userDetails.getUserId(),
-                userDetails.getUserType()*/
+                userDetails.getUserType()
         );
 
         return ResponseEntity.ok(response);
@@ -55,17 +57,17 @@ public class MenuController {
     @DeleteMapping("/{menuId}")
     public ResponseEntity<Void> deleteMenu(
             @PathVariable Long storeId,
-            @PathVariable Long menuId/*,
-            @AuthenticationPrincipal CustomUserDetails userDetails*/) {
+            @PathVariable Long menuId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        menuService.deleteMenu(storeId, menuId/*, userDetails.getUserId(), userDetails.getUserType()*/);
+        menuService.deleteMenu(storeId, menuId, userDetails.getUserId(), userDetails.getUserType());
         return ResponseEntity.noContent().build();
     }
 
-    /*@GetMapping
+    @GetMapping
     public ResponseEntity<List<MenuResponseDto>> getMenus(@PathVariable Long storeId) {
         List<MenuResponseDto> menus = menuService.getMenusByStore(storeId);
         return ResponseEntity.ok(menus);
-    }*/
+    }
 
 }
