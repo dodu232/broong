@@ -2,7 +2,8 @@ package org.example.broong.domain.menu.enums;
 
 public enum MenuState {
     AVAILABLE("판매중"),
-    DELETED("품절");
+    HOLDOUT("품절"),
+    DELETED("삭제");
 
     private final String description;
 

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Store> findByOwnerId(long ownerId);
+
+    boolean existsByIdAndOwnerId(Long storeId, Long userId);
 }
