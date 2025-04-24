@@ -2,18 +2,16 @@ package org.example.broong.domain.auth.service;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
-
-import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
 import org.example.broong.domain.auth.dto.response.AuthResponseDto;
 import org.example.broong.config.JwtUtil;
-import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

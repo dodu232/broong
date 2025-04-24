@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
 import org.example.broong.domain.auth.service.AuthService;
-import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class AutoServiceTest {
