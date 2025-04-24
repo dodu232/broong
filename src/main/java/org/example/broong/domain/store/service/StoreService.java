@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StoreService {
 
-    private final StoreRepository repository;
+    private final StoreRepository storeRepository;
+    private final UserService userService;
 
-    public void addStore(StoreRequestDto.Add dto, long ownerId) {
-        List<Store> list = repository.findByOwnerId(ownerId);
+    public void addStore(StoreRequestDto.Add dto, long userId) {
+        List<Store> findStores = storeRepository.findByUserId(userId);
 
-        if (list.size() == 3) {
+        if (findStores.size() == 3) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
                 "가게는 3개까지 운영 가능합니다.");
         }
@@ -32,9 +34,10 @@ public class StoreService {
             .openingTime(parseLocalTime(dto.getOpeningTime()))
             .closingTime(parseLocalTime(dto.getClosingTime()))
             .minOrderPrice(dto.getMinOrderPrice())
+            .user(userService.getById(userId))
             .build();
 
-        repository.save(saveStore);
+        storeRepository.save(saveStore);
     }
 
     public static LocalTime parseLocalTime(String time) {
