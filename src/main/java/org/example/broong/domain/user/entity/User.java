@@ -8,11 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.user.enums.UserType;
 
@@ -40,9 +39,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime deletedAt;
-
+    @Builder
     public User(String email, String password, String name, UserType userType){
         this.email = email;
         this.password = password;
@@ -54,8 +51,14 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public void deletedUser(){
-        this.deletedAt = LocalDateTime.now();
+    private User(Long id, String email, UserType userType) {
+        this.id = id;
+        this.email = email;
+        this.userType = userType;
+    }
+
+    public static User fromAuthUser(AuthUser authUser) {
+        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserType());
     }
 
     public void addPoint(int point){

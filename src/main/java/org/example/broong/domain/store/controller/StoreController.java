@@ -1,5 +1,6 @@
 package org.example.broong.domain.store.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.service.StoreService;
@@ -21,7 +22,7 @@ public class StoreController {
      */
     @PostMapping
     public ResponseEntity<Void> addStore(
-        @RequestBody StoreRequestDto.Add dto
+        @Valid @RequestBody StoreRequestDto.Add dto
     ){
         service.addStore(dto, 1);
         return ResponseEntity.status(HttpStatus.CREATED).build();
