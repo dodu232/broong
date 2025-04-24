@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import org.example.broong.domain.user.entity.User;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "stores")
 public class Store extends BaseEntity {
 
     @Id
