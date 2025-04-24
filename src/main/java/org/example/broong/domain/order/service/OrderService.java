@@ -6,6 +6,7 @@ import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.repository.OrderRepository;
 import org.example.broong.domain.user.entity.User;
+import org.example.broong.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

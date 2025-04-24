@@ -3,21 +3,25 @@ package org.example.broong.domain.store.dto;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.broong.domain.store.Category;
 
 public class StoreRequestDto {
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Getter
     public static class Add {
 
         @NotBlank(message = "name은 필수 입력 값 입니다.")
         @Size(min = 4, max = 30, message = "4자 ~ 30자 사이의 길이로 입력해주세요.")
         private String name;
-        @NotBlank(message = "category는 필수 입력 값 입니다.")
-        @Size(min = 4, max = 50, message = "4자 ~ 50자 사이의 길이로 입력해주세요.")
+        @NotNull(message = "category는 필수 입력 값 입니다.")
         private Category category;
         @NotBlank(message = "시간은 필수 입력 항목입니다.")
         @Pattern(
@@ -32,14 +36,5 @@ public class StoreRequestDto {
         )
         private String closingTime;
         private int minOrderPrice;
-
-        public Add(String name, Category category, String openingTime, String closingTime,
-            String minOrderPrice) {
-            this.name = name;
-            this.category = category;
-            this.openingTime = openingTime;
-            this.closingTime = closingTime;
-            this.minOrderPrice = isEmpty(minOrderPrice) ? 0 : Integer.parseInt(minOrderPrice) ;
-        }
     }
 }
