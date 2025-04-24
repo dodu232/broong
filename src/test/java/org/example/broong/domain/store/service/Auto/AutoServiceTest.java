@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.example.broong.domain.auto.dto.request.SignupRequestDto;
-import org.example.broong.domain.auto.service.AutoService;
+import org.example.broong.domain.auth.dto.request.AuthRequestDto;
+import org.example.broong.domain.auth.service.AuthService;
 import org.example.broong.config.PasswordEncoder;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.repository.UserRepository;
@@ -27,7 +27,7 @@ public class AutoServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private AutoService autoService;
+    private AuthService autoService;
 
     @Test
     @DisplayName("존재하는 이메일로 회원가입 시도 시 예외 발생")
@@ -35,7 +35,7 @@ public class AutoServiceTest {
         // given
         String email = "exisiting@example.com";
 
-        SignupRequestDto requestDto = new SignupRequestDto("user" , email , "Password12","USER");
+        AuthRequestDto.Singup requestDto = new AuthRequestDto.Singup("user" , email , "Password12","USER");
 
         given(userRepository.existsByEmail(email)).willReturn(true);
 
