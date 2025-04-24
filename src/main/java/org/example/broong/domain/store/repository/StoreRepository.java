@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StoreRepository extends JpaRepository<Store, Long> {
+public interface StoreRepository extends JpaRepository<Store, Long>, StoreRepositoryCustom {
 
     @EntityGraph(attributePaths = {"user"})
     List<Store> findByUserId(@Param("userId") long userId);

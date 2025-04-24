@@ -4,12 +4,17 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
+import org.example.broong.domain.store.dto.StoreResponseDto;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.store.repository.StoreRepositoryImpl;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final StoreRepositoryImpl storeRepositoryImpl;
     private final UserService userService;
 
     public void addStore(StoreRequestDto.Add dto, long userId) {
@@ -40,10 +46,12 @@ public class StoreService {
         storeRepository.save(saveStore);
     }
 
+    public Slice<StoreResponseDto.Get> getStoreList(Category category, Pageable pageable) {
+        return storeRepository.findAllByCategory(category, pageable);
+    }
+
     public static LocalTime parseLocalTime(String time) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(time, fmt);
     }
-
-
 }
