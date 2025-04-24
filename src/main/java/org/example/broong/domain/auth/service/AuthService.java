@@ -1,7 +1,9 @@
 package org.example.broong.domain.auth.service;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
+import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
+import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
 import org.example.broong.domain.auth.dto.response.AuthResponseDto;
@@ -52,14 +54,19 @@ public class AuthService {
 
     }
 
-//    public AutoResponseDto signin(AutoRequestDto.Signin requestDto) {
-//        User user = userRepository.findByEmail(requestDto.getEmail())
-//                .orElseThrow(()-> new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "가입되지 않은 유저입니다."));
-//
-//        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
-//            throw new ApiException(HttpStatus.BAD_REQUEST,INVALID_PARAMETER, " 비밀번호가 일치하지 않습니다.");
-//        }
-//
-//
-//    }
+    @Transactional(readOnly = true)
+    public AuthResponseDto signin(AuthRequestDto.Signin requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(()-> new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "가입되지 않은 유저입니다."));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
+            throw new ApiException(HttpStatus.BAD_REQUEST,INVALID_PARAMETER, " 비밀번호가 일치하지 않습니다.");
+        }
+
+
+        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserType());
+
+        return new AuthResponseDto(bearerToken);
+
+    }
 }
