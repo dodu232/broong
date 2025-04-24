@@ -30,7 +30,7 @@ public class StoreService {
 
         Store saveStore = Store.builder()
             .name(dto.getName())
-            .category(dto.getCategory())
+            .category(dto.getCategory().getDisplayName())
             .openingTime(parseLocalTime(dto.getOpeningTime()))
             .closingTime(parseLocalTime(dto.getClosingTime()))
             .minOrderPrice(dto.getMinOrderPrice())
