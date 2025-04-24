@@ -4,11 +4,14 @@ import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewResponseDto;
+import org.example.broong.domain.testOrder.Orders;
+import org.example.broong.domain.user.entity.User;
 
 import java.util.List;
 
 public interface ReviewsService {
-    void create(Users users, Orders orders, CreateReviewRequestDto createReviewRequestDto);
+    void create(User users, Orders orders, CreateReviewRequestDto createReviewRequestDto);
+//    void create(Long userId, Long reviewId, CreateReviewRequestDto createReviewRequestDto);
 
     List<FindReviewByStoreResponseDto> findByStore(Long storeId);
 

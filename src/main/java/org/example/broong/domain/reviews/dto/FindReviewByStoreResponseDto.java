@@ -20,7 +20,7 @@ public class FindReviewByStoreResponseDto {
     private LocalDateTime updatedAt;
 
     public FindReviewByStoreResponseDto(Reviews reviews) {
-        this.userName = reviews.getUserId().getName;
+        this.userName = reviews.getUserId().getName();
         this.rating = reviews.getRating();
         this.contents = reviews.getContents();
         this.updatedAt = reviews.getUpdatedAt();

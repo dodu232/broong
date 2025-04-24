@@ -2,11 +2,16 @@ package org.example.broong.domain.reviews.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
+import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.testOrder.Orders;
+import org.example.broong.domain.user.entity.User;
+import org.hibernate.query.Order;
 
 @Entity
 @Getter
@@ -21,19 +26,19 @@ public class Reviews extends BaseEntity {
     @NotBlank
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")
-    private Users userId;
+    private User userId;
 
     @NotBlank
     @ManyToOne
     @JoinColumn(nullable = false, name = "store_id")
-    private Stores storeId;
+    private Store storeId;
 
     @NotBlank
     @OneToOne
     @JoinColumn(nullable = false, name = "order_id")
     private Orders orderId;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     private int rating;
 
@@ -41,9 +46,10 @@ public class Reviews extends BaseEntity {
     @Column(nullable = false)
     private String contents;
 
-    public Reviews(Users users, Orders orders, CreateReviewRequestDto createReviewRequestDto) {
+    public Reviews(User users, Orders orders, Store store, CreateReviewRequestDto createReviewRequestDto) {
         this.userId = users;
         this.orderId = orders;
+        this.storeId = store;
         this.rating = createReviewRequestDto.getRating();
         this.contents = createReviewRequestDto.getContents();
     }
@@ -52,7 +58,4 @@ public class Reviews extends BaseEntity {
         this.rating = updateReviewRequestDto.getRating();
         this.contents = updateReviewRequestDto.getContents();
     }
-
-    // todo baseEntity 상속 받아야함
-    // todo 임의로 만든 User, Orders Entity를 바꿔야함
 }
