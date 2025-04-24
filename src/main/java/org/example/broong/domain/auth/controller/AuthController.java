@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponseDto> signin(@RequestBody AuthRequestDto.Signin requestDto){
+    public ResponseEntity<AuthResponseDto> signin(@Valid @RequestBody AuthRequestDto.Signin requestDto){
 
         return ResponseEntity.status(HttpStatus.OK).body(authService.signin(requestDto));
 
