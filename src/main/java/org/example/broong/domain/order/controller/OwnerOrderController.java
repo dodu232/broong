@@ -17,12 +17,12 @@ public class OwnerOrderController {
     private final OwnerOrderService ownerOrderService;
 
     @PutMapping("/orders/{orderId}/accept")
-    public ResponseEntity<OrderStatusResponseDto> acceptOrder(@AuthenticationPrincipal AuthUser owner, @PathVariable Long orderId) {
+    public ResponseEntity<OrderStatusResponseDto> acceptOrder(@Auth AuthUser owner, @PathVariable Long orderId) {
         return ResponseEntity.ok(ownerOrderService.acceptOrder(owner.getId(), orderId));
     }
 
     @PutMapping("/orders/{orderId}/reject")
-    public ResponseEntity<OrderStatusResponseDto> rejectOrder(@PathVariable Long orderId) {
+    public ResponseEntity<OrderStatusResponseDto> rejectOrder(@Auth AuthUser owner, @PathVariable Long orderId) {
         return ResponseEntity.ok(ownerOrderService.rejectOrder(owner.getId(), orderId));
     }
 }

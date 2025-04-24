@@ -19,12 +19,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("orders")
-    public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal User user, @Valid @RequestBody OrderCreateRequestDto dto) {
+    public ResponseEntity<OrderResponseDto> createOrder(@Auth User user, @Valid @RequestBody OrderCreateRequestDto dto) {
         return ResponseEntity.ok(OrderService.createOrder(user.getId(),dto));
     }
 
-    @PutMapping("orders/{drderId}/cancel")
-    public ResponseEntity<OrderStatusResponseDto> cancelOrder(@PathVariable Long drderId) {
-        return ResponseEntity.ok(OrderService.cancelOrder(user.getId), orderId);
+    @PutMapping("orders/{orderId}/cancel")
+    public ResponseEntity<OrderStatusResponseDto> cancelOrder(@Auth User user, @PathVariable Long orderId) {
+        return ResponseEntity.ok(OrderService.cancelOrder(user.getId(), orderId));
     }
 }

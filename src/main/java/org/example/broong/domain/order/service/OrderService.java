@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.repository.OrderRepository;
+import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class OrderService {
     public OrderResponseDto createOrder(Long userId, @Valid OrderCreateRequestDto dto) {
 
         // 가게 영업시간에만 주문 가능
+        Store store =
 
     }
 }

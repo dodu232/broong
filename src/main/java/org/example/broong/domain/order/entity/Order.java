@@ -42,4 +42,7 @@ public class Order {
     @Enumerated (EnumType.STRING)
     private OrderStatus orderStatus;
 
+    // 주문 요청 시각
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }
