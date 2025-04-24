@@ -1,6 +1,8 @@
 package org.example.broong.domain.order.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.common.Auth;
+import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
 import org.example.broong.domain.order.service.OwnerOrderService;
 import org.springframework.http.ResponseEntity;
