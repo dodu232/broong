@@ -7,7 +7,10 @@ import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.order.Enum.OrderStatus;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
+import org.example.broong.global.exception.ApiException;
+import org.example.broong.global.exception.ErrorType;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
@@ -45,4 +48,19 @@ public class Order {
     // 주문 요청 시각
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public Order(User user, Store store, int totalPrice, OrderStatus orderStatus) {
+        this.user = user;
+        this.store = store;
+        this.totalPrice = totalPrice;
+        this.orderStatus = OrderStatus.PENDING; // 기본값 설정
+    }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        if(this.orderStatus == orderStatus.CANCELED) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
+                    "취소된 주문은 상태 변경 할 수 없습니다.");
+        }
+        this.orderStatus = orderStatus;
+    }
 }
