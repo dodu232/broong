@@ -39,7 +39,7 @@ public class MenuService {
             );
         }
 
-        if (!storeRepository.existsByIdAndOwnerId(store.getId(), userId)) {
+        if (!storeRepository.existsByIdAndUser_Id(store.getId(), userId)) {
             throw new ApiException(HttpStatus.FORBIDDEN,
                     ErrorType.INVALID_PARAMETER,
                     "본인의 가게에만 메뉴를 등록할 수 있습니다."
@@ -50,7 +50,7 @@ public class MenuService {
                 .store(store)
                 .name(dto.getName())
                 .price(dto.getPrice())
-                .menuState(MenuState.valueOf(dto.getMenuState()))
+                .menuState(dto.getMenuState())
                 .build();
 
         Menu saved = menuRepository.save(menu);
@@ -71,8 +71,11 @@ public class MenuService {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 수정할 수 있습니다.");
         }
 
-        if (!storeRepository.existsByIdAndOwnerId(storeId, userId)) {
-            throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인의 가게에만 메뉴를 수정할 수 있습니다.");
+        if (!storeRepository.existsByIdAndUser_Id(storeId, userId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN,
+                    ErrorType.INVALID_PARAMETER,
+                    "본인의 가게에만 메뉴를 수정할 수 있습니다."
+            );
         }
 
         Menu menu = menuRepository.findById(menuId)
@@ -82,7 +85,7 @@ public class MenuService {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "해당 가게에 속한 메뉴가 아닙니다.");
         }
 
-        menu.update(dto.getName(), dto.getPrice(), MenuState.valueOf(dto.getMenuState()));
+        menu.update(dto.getName(), dto.getPrice(), dto.getMenuState());
 
         return MenuResponseDto.builder()
                 .id(menu.getId())
@@ -100,8 +103,11 @@ public class MenuService {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 삭제할 수 있습니다.");
         }
 
-        if (!storeRepository.existsByIdAndOwnerId(storeId, userId)) {
-            throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인의 가게에만 메뉴를 삭제할 수 있습니다.");
+        if (!storeRepository.existsByIdAndUser_Id(storeId, userId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN,
+                    ErrorType.INVALID_PARAMETER,
+                    "본인의 가게에만 메뉴를 삭제할 수 있습니다."
+            );
         }
 
         Menu menu = menuRepository.findById(menuId)
@@ -128,21 +134,6 @@ public class MenuService {
                         .build())
                 .collect(Collectors.toList());
     }
-
-    /*// 주문 내역 조회 등에서는 menuId로 직접 조회(삭제 메뉴도 포함)
-    @Transactional(readOnly = true)
-    public MenuResponseDto getMenuById(Long menuId) {
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
-
-        return MenuResponseDto.builder()
-                .id(menu.getId())
-                .storeId(menu.getStore().getId())
-                .name(menu.getName())
-                .price(menu.getPrice())
-                .menuState(menu.getMenuState())
-                .build();
-    }*/
 
 }
 

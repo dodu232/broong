@@ -31,7 +31,7 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private Category category;
+    private String category;
     @Column(nullable = false, columnDefinition = "TIME")
     private LocalTime openingTime;
     @Column(nullable = false, columnDefinition = "TIME")
@@ -43,7 +43,7 @@ public class Store extends BaseEntity {
     private User user;
 
     @Builder
-    public Store(String name, Category category, LocalTime openingTime, LocalTime closingTime,
+    public Store(String name, String category, LocalTime openingTime, LocalTime closingTime,
         int minOrderPrice, User user) {
         this.name = name;
         this.category = category;

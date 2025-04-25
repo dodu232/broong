@@ -1,29 +1,25 @@
 package org.example.broong.domain.store.service;
 
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
-import org.example.broong.domain.menu.dto.response.MenuResponseDto;
-import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.menu.enums.MenuState;
-import org.example.broong.domain.menu.repository.MenuRepository;
 import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
-import org.example.broong.domain.user.repository.UserRepository;
+import org.example.broong.global.exception.ApiException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
-import java.util.Optional;
-import static org.mockito.ArgumentMatchers.any;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {
@@ -31,67 +27,81 @@ class MenuServiceTest {
     @InjectMocks
     private MenuService menuService;
 
-    @Mock
-    private MenuRepository menuRepository;
-
-    @Mock
-    private StoreRepository storeRepository;
-
     @Test
-    void 메뉴_생성_성공() {
+    @DisplayName("사장님이 아니면 메뉴생성 예외처리")
+    void ownerCreateMenu() {
         // given
         Long storeId = 1L;
         Long userId = 100L;
-        String menuName = "양념치킨";
-        int menuPrice = 10000;
 
-        MenuRequestDto request = MenuRequestDto.builder()
-                .storeId(storeId)
-                .name(menuName)
-                .price(menuPrice)
-                .menuState("AVAILABLE")
+        MenuRequestDto request = new MenuRequestDto("된장찌개", 9000, MenuState.AVAILABLE);
+
+        User notOwner = User.builder()
+                .name("손님")
+                .userType(UserType.USER)
                 .build();
+
+        ReflectionTestUtils.setField(notOwner, "id", userId); // 테스트 전용 임시 설정
+
 
         Store store = Store.builder()
-                .name("치킨집")
-                .category(Category.KOREAN) // enum 가정
+                .name("가게")
+                .category(String.valueOf(Category.KOREAN))
                 .openingTime(LocalTime.of(9, 0))
                 .closingTime(LocalTime.of(21, 0))
-                .minOrderPrice(15000)
-                .ownerId(userId)
+                .minOrderPrice(10000)
+                .user(notOwner)
                 .build();
 
-        when(menuRepository.save(any(Menu.class))).thenAnswer(invocation -> {
-            Menu menu = invocation.getArgument(0);
-            menu.setId(10L);
-            return menu;
-        });
-
-        // when
-        MenuResponseDto result = menuService.createMenu(store, request);
-
-        // then
-        assertEquals(menuName, result.getName());
-        assertEquals(menuPrice, result.getPrice());
-        assertEquals(MenuState.AVAILABLE, result.getMenuState());
-    }
-}
-
-
-
-    /*@Test
-    void 사장님이_아니면_메뉴_생성_예외() {
-        // given
-        Long storeId = 1L;
-        Long userId = 100L;
-        MenuRequestDto request = new MenuRequestDto("된장찌개", "9000", MenuState.AVAILABLE);
-        User notOwner = new User(userId, "직원", UserType.USER);
-        Store store = new Store(storeId, "가게", notOwner);
-
-        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+        ReflectionTestUtils.setField(store, "id", storeId);
 
         // when & then
-        assertThrows(ApiException.class, () -> menuService.createMenu(storeId, request, userId));
+        assertThrows(ApiException.class, () -> menuService.createMenu(store, request, userId, notOwner.getUserType()));
+    }
+
+    @Test
+    @DisplayName("사장님이 아닌 사용자가 메뉴삭제 시도 예외처리")
+    void UserMenuDelete() {
+        // given
+        Long storeId = 1L;
+        Long menuId = 10L;
+        Long userId = 100L;
+        UserType userType = UserType.USER; // 일반 사용자
+
+        // when & then
+        ApiException exception = assertThrows(ApiException.class, () ->
+                menuService.deleteMenu(storeId, menuId, userId, userType)
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
+        assertEquals("사장님만 메뉴를 삭제할 수 있습니다.", exception.getMessage());
+    }
+
+    /*@Test
+    @DisplayName("menuState 값을 잘 받아오고 있는가")
+    void getMenuState() {
+
+        // given
+        String state = "AVAILABLE";
+
+        UserType userType = UserType.USER; // 일반 사용자
+
+
+        // when
+        MenuRequestDto dto = MenuRequestDto.builder()
+                .menuState(state)
+                .build();
+
+        // when & then
+        ApiException exception = assertThrows(ApiException.class, () ->
+                menuService.deleteMenu(userType)
+        );
+
+        // then
+        assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
+        assertEquals("사장님만 메뉴를 삭제할 수 있습니다.", exception.getMessage());
     }*/
+
+}
 
 

@@ -9,4 +9,5 @@ import java.util.List;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
     List<Menu> findByStoreIdAndMenuStateNot(Long storeId, MenuState state);
 
+    List<Menu> findAllByStoreIdAndMenuStateNot(Long storeId, MenuState deletedState);
 }

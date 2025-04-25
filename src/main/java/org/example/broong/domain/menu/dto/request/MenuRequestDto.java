@@ -5,6 +5,7 @@ import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.example.broong.domain.menu.enums.MenuState;
 
 @Getter
 @Setter
@@ -24,8 +25,12 @@ public class MenuRequestDto {
     @Min(0)
     private int price;
 
-    @NotBlank(message = "메뉴 상태는 필수입니다.")
-    @Size(min = 2, max = 20, message = "메뉴 상태 2자 이상 30자 이하여야 합니다.")
-    private String menuState;
+    @NotNull(message = "menuState는 필수 값입니다.")
+    private MenuState menuState;
 
+    public MenuRequestDto(String name, int price, MenuState menuState) {
+        this.name = name;
+        this.price = price;
+        this.menuState = menuState;
+    }
 }

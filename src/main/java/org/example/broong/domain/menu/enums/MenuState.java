@@ -1,5 +1,8 @@
 package org.example.broong.domain.menu.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum MenuState {
     AVAILABLE("판매중"),
     HOLDOUT("품절"),
@@ -11,7 +14,4 @@ public enum MenuState {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
