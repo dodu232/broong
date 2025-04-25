@@ -16,7 +16,7 @@ public class UpdateReviewResponseDto {
 
     private String contents;
 
-    @JsonFormat(pattern = "mm-dd hh:mm")
+    @JsonFormat(pattern = "MM-dd HH:mm")
     private LocalDateTime updatedAt;
 
     public UpdateReviewResponseDto(Reviews reviews) {

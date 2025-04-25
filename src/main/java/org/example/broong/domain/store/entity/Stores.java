@@ -22,7 +22,7 @@ import org.example.broong.domain.user.entity.User;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "stores")
-public class Store extends BaseEntity {
+public class Stores extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +43,8 @@ public class Store extends BaseEntity {
     private User user;
 
     @Builder
-    public Store(String name, Category category, LocalTime openingTime, LocalTime closingTime,
-        int minOrderPrice, User user) {
+    public Stores(String name, Category category, LocalTime openingTime, LocalTime closingTime,
+                  int minOrderPrice, User user) {
         this.name = name;
         this.category = category;
         this.openingTime = openingTime;

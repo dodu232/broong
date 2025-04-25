@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
-import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.store.entity.Stores;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
@@ -48,11 +48,11 @@ class StoreServiceTest {
             Category.FAST_FOOD,
             "09:00",
             "21:00",
-            "10000"
+            10000
         );
 
-        List<Store> dummyStores = IntStream.rangeClosed(1, 3)
-            .mapToObj(i -> Store.builder()
+        List<Stores> dummyStores = IntStream.rangeClosed(1, 3)
+            .mapToObj(i -> Stores.builder()
                 .name("store" + i)
                 .category(Category.FAST_FOOD)
                 .openingTime(LocalTime.of(9, 0))
@@ -81,7 +81,7 @@ class StoreServiceTest {
             Category.FAST_FOOD,
             "09:00",
             "21:00",
-            "10000"
+            10000
         );
 
         // when

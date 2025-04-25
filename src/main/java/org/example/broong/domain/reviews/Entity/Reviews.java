@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
-import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.store.entity.Stores;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.user.entity.User;
-import org.hibernate.query.Order;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,17 +24,14 @@ public class Reviews extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")
     private User userId;
 
-    @NotBlank
     @ManyToOne
     @JoinColumn(nullable = false, name = "store_id")
-    private Store storeId;
+    private Stores storeId;
 
-    @NotBlank
     @OneToOne
     @JoinColumn(nullable = false, name = "order_id")
     private Orders orderId;
@@ -46,7 +44,7 @@ public class Reviews extends BaseEntity {
     @Column(nullable = false)
     private String contents;
 
-    public Reviews(User users, Orders orders, Store store, CreateReviewRequestDto createReviewRequestDto) {
+    public Reviews(User users, Orders orders, Stores store, CreateReviewRequestDto createReviewRequestDto) {
         this.userId = users;
         this.orderId = orders;
         this.storeId = store;

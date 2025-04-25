@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.store.dto.StoreRequestDto;
-import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.store.entity.Stores;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
@@ -21,14 +21,14 @@ public class StoreService {
     private final UserService userService;
 
     public void addStore(StoreRequestDto.Add dto, long userId) {
-        List<Store> findStores = storeRepository.findByUserId(userId);
+        List<Stores> findStores = storeRepository.findByUserId(userId);
 
         if (findStores.size() == 3) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
                 "가게는 3개까지 운영 가능합니다.");
         }
 
-        Store saveStore = Store.builder()
+        Stores saveStore = Stores.builder()
             .name(dto.getName())
             .category(dto.getCategory())
             .openingTime(parseLocalTime(dto.getOpeningTime()))
