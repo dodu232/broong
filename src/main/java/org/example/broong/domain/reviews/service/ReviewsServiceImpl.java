@@ -27,7 +27,6 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     private final ReviewsRepository reviewsRepository;
     private final UserService userService;
-    private final StoreService storeService;
     private final OrdersRepository ordersRepository;
 
     // 리뷰 생성 메서드
