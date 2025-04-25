@@ -37,4 +37,24 @@ public class StoreRequestDto {
         private String closingTime;
         private int minOrderPrice;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Update {
+        @Size(min = 4, max = 30, message = "4자 ~ 30자 사이의 길이로 입력해주세요.")
+        private String name;
+        private Category category;
+        @Pattern(
+            regexp = "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            message = "시간 형식은 HH:mm (00:00~23:59) 이어야 합니다."
+        )
+        private String openingTime;
+        @Pattern(
+            regexp = "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            message = "시간 형식은 HH:mm 이어야 합니다."
+        )
+        private String closingTime;
+        private int minOrderPrice;
+    }
 }
