@@ -7,8 +7,7 @@ import org.example.broong.domain.menu.enums.MenuState;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Table(name = "menus")
@@ -36,5 +35,9 @@ public class Menu {
         this.name = name;
         this.price = price;
         this.menuState = state;
+    }
+
+    public void delete() {
+        this.menuState = MenuState.DELETED;
     }
 }

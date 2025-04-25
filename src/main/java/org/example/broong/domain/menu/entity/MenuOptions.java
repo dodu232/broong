@@ -6,8 +6,7 @@ import org.example.broong.domain.menu.entity.Menu;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Table(name = "menu_options")

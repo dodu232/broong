@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 public class MenuRequestDto {

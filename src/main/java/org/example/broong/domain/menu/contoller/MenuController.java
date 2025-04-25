@@ -1,9 +1,11 @@
 package org.example.broong.domain.menu.contoller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
+import org.example.broong.domain.menu.dto.response.MenuListResponseDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.service.MenuService;
@@ -24,51 +26,41 @@ import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 public class MenuController {
 
     private final MenuService menuService;
-    private final StoreRepository storeRepository;
 
     @PostMapping
-    public ResponseEntity<MenuResponseDto> createMenu(@PathVariable Long storeId,
-                                                      @RequestBody MenuRequestDto dto,
-                                                      @Auth AuthUser authUser) {
+    public ResponseEntity<MenuResponseDto> createMenu(
+            @Valid @PathVariable Long storeId,
+            @RequestBody MenuRequestDto dto,
+            @Auth AuthUser authUser){
 
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
-
-        MenuResponseDto response = menuService.createMenu(store, dto, authUser.getId(), authUser.getUserType());
+        MenuResponseDto response = menuService.createMenu(storeId, dto, authUser.getId(), authUser.getUserType());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{menuId}")
+    @PatchMapping("/{menuId}")
     public ResponseEntity<MenuResponseDto> updateMenu(
-            @PathVariable Long storeId,
+            @Valid @PathVariable Long storeId,
             @PathVariable Long menuId,
             @RequestBody MenuRequestDto dto,
             @Auth AuthUser authUser) {
 
-        MenuResponseDto response = menuService.updateMenu(
-                storeId,
-                menuId,
-                dto,
-                authUser.getId(),
-                authUser.getUserType()
-        );
-
+        MenuResponseDto response = menuService.updateMenu(storeId, menuId, dto, authUser.getId(), authUser.getUserType());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{menuId}")
     public ResponseEntity<Void> deleteMenu(
-            @PathVariable Long storeId,
+            @Valid @PathVariable Long storeId,
             @PathVariable Long menuId,
             @Auth AuthUser authUser) {
 
-        menuService.deleteMenu(storeId, menuId, authUser.getId(), authUser.getUserType());
-        return ResponseEntity.noContent().build();
+        menuService.deleteMenu(storeId, menuId, authUser);
+        return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<MenuResponseDto>> getAllMenus() {
+    public ResponseEntity<MenuListResponseDto> getAllMenus() {
         List<MenuResponseDto> menus = menuService.getAllMenus();
-        return ResponseEntity.ok(menus);
+        return ResponseEntity.ok(new MenuListResponseDto(menus, menus.size()));
     }
 }

@@ -1,13 +1,14 @@
 package org.example.broong.domain.menu.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.repository.MenuRepository;
 import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
@@ -25,10 +26,10 @@ import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
+    private final StoreService storeService;
 
     @Transactional
-    public MenuResponseDto createMenu(Store store, MenuRequestDto dto, Long userId, UserType userType) {
+    public MenuResponseDto createMenu(Long storeId, MenuRequestDto dto, Long userId, UserType userType) {
 
         if (userType != UserType.OWNER) {
             throw new ApiException(
@@ -38,12 +39,7 @@ public class MenuService {
             );
         }
 
-        if (!storeRepository.existsByIdAndUser_Id(store.getId(), userId)) {
-            throw new ApiException(HttpStatus.FORBIDDEN,
-                    ErrorType.INVALID_PARAMETER,
-                    "본인의 가게에만 메뉴를 등록할 수 있습니다."
-            );
-        }
+        Store store = storeService.getStoreOwnedByUser(storeId, userId);
 
         Menu menu = Menu.builder()
                 .store(store)
@@ -71,18 +67,10 @@ public class MenuService {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 수정할 수 있습니다.");
         }
 
-        if (!storeRepository.existsByIdAndUser_Id(storeId, userId)) {
-            throw new ApiException(HttpStatus.FORBIDDEN,
-                    ErrorType.INVALID_PARAMETER,
-                    "본인의 가게에만 메뉴를 수정할 수 있습니다."
-            );
-        }
+        Store store = storeService.getMyStoreOrThrow(storeId, userId);
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
-
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
 
         if (menu.getStore().getId() != storeId) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "해당 가게에 속한 메뉴가 아닙니다.");
@@ -101,18 +89,13 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long storeId, Long menuId, Long userId, UserType userType) {
+    public void deleteMenu(Long storeId, Long menuId, AuthUser authUser) {
 
-        if (userType != UserType.OWNER) {
+        if (authUser.getUserType() != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 삭제할 수 있습니다.");
         }
 
-        if (!storeRepository.existsByIdAndUser_Id(storeId, userId)) {
-            throw new ApiException(HttpStatus.FORBIDDEN,
-                    ErrorType.INVALID_PARAMETER,
-                    "본인의 가게에만 메뉴를 삭제할 수 있습니다."
-            );
-        }
+        storeService.getStoreOwnedByUser(storeId, authUser.getId());
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
@@ -121,13 +104,12 @@ public class MenuService {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "해당 가게에 속한 메뉴가 아닙니다.");
         }
 
-        menu.setMenuState(MenuState.DELETED);
+        menu.delete();
     }
 
     @Transactional(readOnly = true)
     public List<MenuResponseDto> getAllMenus() {
         List<Menu> menus = menuRepository.findAllByMenuStateNot(MenuState.DELETED);
-
 
         return menus.stream()
                 .map(menu -> MenuResponseDto.builder()

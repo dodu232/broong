@@ -12,7 +12,4 @@ public interface StoreRepository extends JpaRepository<Store, Long>, StoreReposi
 
     @EntityGraph(attributePaths = {"user"})
     List<Store> findByUserId(@Param("userId") long userId);
-
-    boolean existsByIdAndUser_Id(Long storeId, Long userId);
-
 }
