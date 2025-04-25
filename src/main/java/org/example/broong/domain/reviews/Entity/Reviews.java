@@ -12,8 +12,6 @@ import org.example.broong.domain.user.entity.User;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @SQLDelete(sql = "UPDATE broong.reviews SET deleted_at = now() WHERE id = ?")

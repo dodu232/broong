@@ -6,18 +6,21 @@ import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.reviews.service.ReviewsServiceImpl;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.entity.User;
-import org.example.broong.domain.user.repository.UserRepository;
+import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -39,10 +42,10 @@ public class ReviewsServiceTest {
     private ReviewsServiceImpl reviewsService;
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Mock
-    private StoreRepository storeRepository;
+    private StoreService storeService;
 
     @Mock
     private OrdersRepository ordersRepository;
@@ -76,45 +79,67 @@ public class ReviewsServiceTest {
             testUser,
             testOrder,
             testStore,
-            testCreateReviewRequestDto
+            testCreateReviewRequestDto.getRating(),
+            testCreateReviewRequestDto.getContents()
     );
 
-    // 리뷰 생성: 성공
     @Test
+    @DisplayName("리뷰를 만들면 정상적으로 된다.")
     public void createSuccess() {
         // given
         given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
         Long testOrderId = 1L;
+        Long testUserId = 1L;
         // when
-        reviewsService.create(testUser, testOrderId, testCreateReviewRequestDto);
+        reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto);
         // then
         verify(reviewsRepository, times(1)).save(any());
     }
 
     // 리뷰 생성: 주문이 존재하지 않을 때
     @Test
+    @DisplayName("주문이 없을 경우 API 예외를 던져준다.")
     public void createFail_OrderIsNull() {
         // given
+        Long testUserId = 1L;
         Long testOrderId = 1L;
         // when
-        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUser, testOrderId, testCreateReviewRequestDto));
+        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto));
         // then
         assertEquals("존재하지 않는 주문입니다.", exception.getMessage());
     }
 
-    // 리뷰 생성: 주문에 리뷰가 이미 있는 경우
+    // 리뷰 생성
     @Test
+    @DisplayName("주문에 이미 리뷰가 있을 경우 API 예외를 던져준다.")
     public void createFail_OrderAlreadyHasReview() {
         // given
-        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
+        Long testUserId = 1L;
         Long testOrderId = 1L;
+        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
         given(reviewsRepository.existsByOrderId_Id(testOrderId)).willReturn(true);
         // when
-        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUser, testOrderId, testCreateReviewRequestDto));
+        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto));
         // then
         assertEquals("리뷰를 작성하신 주문입니다.", exception.getMessage());
     }
 
-    // 리뷰 생성: 주문이 폐업한 가게일 경우
-    // 가게 폐업 로직 생성 후 테스트
+    // 리뷰 생성
+    @Test
+    @DisplayName("리뷰를 작성할 주문이 폐업한 가게의 주문인 경우 API 예외를 던져준다.")
+    public void createFail_StoreIsClosed() {
+        //given
+        Long testUserId = 1L;
+        Long testOrderId = 1L;
+
+        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
+
+        ReflectionTestUtils.setField(testStore, "deletedAt", LocalDateTime.now());
+
+        // when
+        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto));
+        // then
+        assertEquals("존재하지 않는 가게입니다.", exception.getMessage());
+    }
+
 }

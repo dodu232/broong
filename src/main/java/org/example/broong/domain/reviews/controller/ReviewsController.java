@@ -9,12 +9,12 @@ import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewResponseDto;
 import org.example.broong.domain.reviews.service.ReviewsService;
-import org.example.broong.domain.user.entity.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 // 리뷰 컨트롤러 클래스
 @RestController
@@ -39,15 +39,15 @@ public class ReviewsController {
                 .build();
     }
 
-    // 가게 기준 리뷰 다건 조회 API
+    // 가게 기준 리뷰 다건 페이징 조회 API
     @GetMapping("/{storeId}")
-    public ResponseEntity<List<FindReviewByStoreResponseDto>> getByStore(
-            @PathVariable Long storeId
+    public ResponseEntity<Slice<FindReviewByStoreResponseDto>> getReviewsList(
+            @PathVariable Long storeId,
+            @PageableDefault(size = 10) Pageable pageable
     ) {
-        List<FindReviewByStoreResponseDto> storeReviews = reviewsService.findByStore(storeId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(storeReviews);
+                .body(reviewsService.getReviewsListByStore(storeId, pageable));
     }
 
     // 리뷰 id 기준 리뷰 수정 API
@@ -72,4 +72,6 @@ public class ReviewsController {
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
+
+
 }

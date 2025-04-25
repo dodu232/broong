@@ -8,18 +8,17 @@ import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewResponseDto;
 import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // 리뷰 서비스 클래스
 @Service
@@ -27,15 +26,9 @@ import java.util.List;
 public class ReviewsServiceImpl implements ReviewsService {
 
     private final ReviewsRepository reviewsRepository;
-    private final StoreRepository storesRepository;
-    private final OrdersRepository ordersRepository;
     private final UserService userService;
-
-    // 로그인 유저 확인
-//    public static void loginUserTest(Long userId) {
-
-//    }
-//    ReviewsServiceImpl.loginUserTest(userId);
+    private final StoreService storeService;
+    private final OrdersRepository ordersRepository;
 
     // 리뷰 생성 메서드
     @Override
@@ -59,20 +52,10 @@ public class ReviewsServiceImpl implements ReviewsService {
         reviewsRepository.save(newReview);
     }
 
-    // storeId 기준 리뷰 조회 메서드
+    // storeId 기준 리뷰 페이징 조회 메서드
     @Override
-    public List<FindReviewByStoreResponseDto> findByStore(Long storeId) {
-        Store store = storesRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다."));
-        if (store.getDeletedAt() != null) {
-            throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다.");
-        }
-        List<Reviews> reviewsList = reviewsRepository.findAllByStoreIdAndUserId_DeletedAtIsNull(store);
-        List<FindReviewByStoreResponseDto> reviewsDtoList = new ArrayList<>();
-        for (Reviews reviews : reviewsList) {
-            reviewsDtoList.add(new FindReviewByStoreResponseDto(reviews));
-        }
-        return reviewsDtoList;
+    public Slice<FindReviewByStoreResponseDto> getReviewsListByStore(Long storeId, Pageable pageable) {
+        return reviewsRepository.findReviewListByStoreId(storeId, pageable);
     }
 
     // 리뷰 id 기준 리뷰 수정 메서드

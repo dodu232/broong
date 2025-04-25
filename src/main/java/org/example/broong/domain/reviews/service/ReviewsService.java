@@ -4,15 +4,13 @@ import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewResponseDto;
-import org.example.broong.domain.testOrder.Orders;
-import org.example.broong.domain.user.entity.User;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface ReviewsService {
     void create(Long userId, Long orderId, CreateReviewRequestDto createReviewRequestDto);
 
-    List<FindReviewByStoreResponseDto> findByStore(Long storeId);
+    Slice<FindReviewByStoreResponseDto> getReviewsListByStore(Long storeId, Pageable pageable);
 
     UpdateReviewResponseDto updateById(Long userId, Long reviewId, UpdateReviewRequestDto updateReviewRequestDto);
 
