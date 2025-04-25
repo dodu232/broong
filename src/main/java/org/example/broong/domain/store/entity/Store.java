@@ -56,5 +56,12 @@ public class Store extends BaseEntity {
         this.user = user;
     }
 
-
+    public void updateStore(String name, Category category, LocalTime openingTime, LocalTime closingTime,
+        Integer minOrderPrice){
+        this.name =  name == null || name.isBlank() ? this.name : name;
+        this.category = category == null ? this.category : category;
+        this.openingTime = openingTime == null ? this.openingTime : openingTime;
+        this.closingTime = closingTime == null ? this.closingTime : closingTime;
+        this.minOrderPrice =  minOrderPrice == null ? this.minOrderPrice : minOrderPrice;
+    }
 }
