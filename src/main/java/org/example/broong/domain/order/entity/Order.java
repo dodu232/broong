@@ -28,12 +28,12 @@ public class Order {
 
     // 유저 ID
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     // 가게 ID
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store", nullable = false)
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     // 총 가격
@@ -49,11 +49,12 @@ public class Order {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Order(User user, Store store, int totalPrice, OrderStatus orderStatus) {
+    public Order(User user, Store store, int totalPrice, OrderStatus orderStatus, LocalDateTime updatedAt) {
         this.user = user;
         this.store = store;
         this.totalPrice = totalPrice;
         this.orderStatus = OrderStatus.PENDING; // 기본값 설정
+        this.updatedAt = updatedAt;
     }
 
     public void updateOrderStatus(OrderStatus orderStatus) {

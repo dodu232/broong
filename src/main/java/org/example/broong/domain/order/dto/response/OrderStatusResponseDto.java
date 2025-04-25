@@ -19,7 +19,7 @@ public class OrderStatusResponseDto {
     public static OrderStatusResponseDto from(Order order) {
         return new OrderStatusResponseDto(
                 order.getId(),
-                order.getStore().getStoreId(),
+                order.getStore().getId(),
                 order.getOrderStatus()
         );
     }
