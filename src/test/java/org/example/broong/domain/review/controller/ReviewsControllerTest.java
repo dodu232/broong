@@ -6,7 +6,7 @@ import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.reviews.service.ReviewsServiceImpl;
 import org.example.broong.domain.store.Category;
-import org.example.broong.domain.store.entity.Stores;
+import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.testOrder.OrdersRepository;
@@ -57,7 +57,7 @@ public class ReviewsControllerTest {
                 "누구인가",
                 USER
         );
-        Stores testStore = new Stores(
+        Store testStore = new Store(
                 "메가커피",
                 Category.CAFE,
                 LocalTime.parse("08:00"),

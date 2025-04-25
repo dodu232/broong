@@ -10,7 +10,7 @@ import org.example.broong.domain.user.entity.User;
 import java.util.List;
 
 public interface ReviewsService {
-    void create(User users, Long order_id, CreateReviewRequestDto createReviewRequestDto);
+    void create(Long userId, Long orderId, CreateReviewRequestDto createReviewRequestDto);
 
     List<FindReviewByStoreResponseDto> findByStore(Long storeId);
 

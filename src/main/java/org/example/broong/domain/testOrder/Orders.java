@@ -3,7 +3,7 @@ package org.example.broong.domain.testOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.store.entity.Stores;
+import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -24,7 +24,7 @@ public class Orders {
 
     @ManyToOne
     @JoinColumn
-    private Stores store;
+    private Store store;
 
     private int totalPrice;
 
@@ -33,7 +33,7 @@ public class Orders {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Orders(User user, Stores store, int totalPrice, String orderState) {
+    public Orders(User user, Store store, int totalPrice, String orderState) {
         this.user = user;
         this.store = store;
         this.totalPrice = totalPrice;

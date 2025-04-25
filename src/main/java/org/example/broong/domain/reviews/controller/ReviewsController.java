@@ -26,45 +26,50 @@ public class ReviewsController {
 
 
     // 리뷰 생성 API
-    @PostMapping("/{order_id}")
+    @PostMapping("/{orderId}")
     public ResponseEntity<Void> create(
             @Auth AuthUser authUser,
-            @PathVariable Long order_id,
+            @PathVariable Long orderId,
             @Valid @RequestBody CreateReviewRequestDto createReviewRequestDto
     ) {
         // 임시 코드 @AuthenticationPrincipal User user
-        User user = User.fromAuthUser(authUser);
-
-        reviewsService.create(user, order_id, createReviewRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        reviewsService.create(authUser.getId(), orderId, createReviewRequestDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
     }
 
     // 가게 기준 리뷰 다건 조회 API
-    @GetMapping("/{store_id}")
-    public ResponseEntity<List<FindReviewByStoreResponseDto>> findByStore(@PathVariable Long store_id) {
-        List<FindReviewByStoreResponseDto> storeReviews = reviewsService.findByStore(store_id);
-        return ResponseEntity.status(HttpStatus.OK).body(storeReviews);
+    @GetMapping("/{storeId}")
+    public ResponseEntity<List<FindReviewByStoreResponseDto>> getByStore(
+            @PathVariable Long storeId
+    ) {
+        List<FindReviewByStoreResponseDto> storeReviews = reviewsService.findByStore(storeId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(storeReviews);
     }
 
     // 리뷰 id 기준 리뷰 수정 API
-    @PatchMapping("/{review_id}")
+    @PatchMapping("/{reviewId}")
     public ResponseEntity<UpdateReviewResponseDto> updateById(
             @Auth AuthUser authUser,
-            @Valid @RequestBody UpdateReviewRequestDto updateReviewRequestDto,
-            @PathVariable Long review_id
+            @Valid @RequestBody UpdateReviewRequestDto requestDto,
+            @PathVariable Long reviewId
     ) {
-        User user = User.fromAuthUser(authUser);
-
-        UpdateReviewResponseDto updateReviewResponseDto = reviewsService.updateById(user.getId(), review_id, updateReviewRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(updateReviewResponseDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(reviewsService.updateById(authUser.getId(), reviewId, requestDto));
     }
 
     // 리뷰 id 기준 리뷰 삭제 API
-    @DeleteMapping("/{review_id}")
-    public ResponseEntity<Void> deleteReview(@Auth AuthUser authUser, @PathVariable Long review_id) {
-        User user = User.fromAuthUser(authUser);
-
-        reviewsService.deleteById(user.getId(), review_id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @Auth AuthUser authUser, @PathVariable Long reviewId
+    ) {
+        reviewsService.deleteById(authUser.getId(), reviewId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
