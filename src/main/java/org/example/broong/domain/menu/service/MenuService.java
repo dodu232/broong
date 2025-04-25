@@ -128,10 +128,12 @@ public class MenuService {
     public List<MenuResponseDto> getAllMenus() {
         List<Menu> menus = menuRepository.findAllByMenuStateNot(MenuState.DELETED);
 
+
         return menus.stream()
                 .map(menu -> MenuResponseDto.builder()
                         .id(menu.getId())
                         .storeId(menu.getStore().getId())
+                        .storeName(menu.getStore().getName())
                         .name(menu.getName())
                         .price(menu.getPrice())
                         .menuState(menu.getMenuState())
