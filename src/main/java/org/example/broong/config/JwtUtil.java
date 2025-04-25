@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtUtil {
 
-    private static final String BEARER_RPEFIX = "Bearer ";
+    //private static final String BEARER_RPEFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 60 * 1000L;
 
     @Value("${jwt.secret.key}")
