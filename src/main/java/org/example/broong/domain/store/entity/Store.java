@@ -19,11 +19,15 @@ import lombok.NoArgsConstructor;
 import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.user.entity.User;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "stores")
+@SQLDelete(sql = "UPDATE stores Set deleted_at = now() WHERE id = ?")
+@SQLRestriction("deleted_at is null")
 public class Store extends BaseEntity {
 
     @Id

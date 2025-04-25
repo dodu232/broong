@@ -87,6 +87,20 @@ public class StoreService {
             parseLocalTime(dto.getClosingTime()), dto.getMinOrderPrice());
     }
 
+    @Transactional
+    public void deleteStore(Long storeId, long userId){
+        Store findStore = storeRepository.findById(storeId)
+            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
+                "해당하는 가게가 존재하지 않습니다."));
+
+        if(findStore.getUser().getId() != userId){
+            throw new ApiException(HttpStatus.FORBIDDEN, ErrorType.INVALID_PARAMETER,
+                "해당 가게에 대한 삭제 권한이 없습니다.");
+        }
+
+        storeRepository.delete(findStore);
+    }
+
     public static LocalTime parseLocalTime(String time) {
         if (time == null || time.isBlank()) {
             return null;

@@ -27,7 +27,6 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .selectFrom(store)
             .where(
                 store.category.eq(category)
-                    .and(store.deletedAt.isNull())
             )
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)

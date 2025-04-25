@@ -15,6 +15,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,10 +59,19 @@ public class StoreController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateStore(
         @Auth AuthUser user,
-        @RequestBody StoreRequestDto.Update dto,
+        @Valid @RequestBody StoreRequestDto.Update dto,
         @PathVariable Long id
     ){
         service.updateStore(id, user.getId(), dto);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteStore(
+        @Auth AuthUser user,
+        @PathVariable Long id
+    ){
+        service.deleteStore(id, user.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
