@@ -5,6 +5,7 @@ import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
+import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
@@ -66,9 +67,8 @@ public class MenuController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MenuResponseDto>> getMenus(@PathVariable Long storeId) {
-        List<MenuResponseDto> menus = menuService.getMenusByStore(storeId);
+    public ResponseEntity<List<MenuResponseDto>> getAllMenus() {
+        List<MenuResponseDto> menus = menuService.getAllMenus();
         return ResponseEntity.ok(menus);
     }
-
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
@@ -50,7 +49,7 @@ public class MenuService {
                 .store(store)
                 .name(dto.getName())
                 .price(dto.getPrice())
-                .menuState(dto.getMenuState())
+                .menuState(MenuState.valueOf(dto.getMenuState()))
                 .build();
 
         Menu saved = menuRepository.save(menu);
@@ -58,6 +57,7 @@ public class MenuService {
         return MenuResponseDto.builder()
                 .id(saved.getId())
                 .storeId(saved.getStore().getId())
+                .storeName(store.getName())
                 .name(saved.getName())
                 .price(saved.getPrice())
                 .menuState(saved.getMenuState())
@@ -81,15 +81,19 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
 
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
+
         if (menu.getStore().getId() != storeId) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "해당 가게에 속한 메뉴가 아닙니다.");
         }
 
-        menu.update(dto.getName(), dto.getPrice(), dto.getMenuState());
+        menu.update(dto.getName(), dto.getPrice(), MenuState.valueOf(dto.getMenuState()));
 
         return MenuResponseDto.builder()
                 .id(menu.getId())
                 .storeId(menu.getStore().getId())
+                .storeName(store.getName())
                 .name(menu.getName())
                 .price(menu.getPrice())
                 .menuState(menu.getMenuState())
@@ -121,8 +125,8 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<MenuResponseDto> getMenusByStore(Long storeId) {
-        List<Menu> menus = menuRepository.findByStoreIdAndMenuStateNot(storeId, MenuState.DELETED);
+    public List<MenuResponseDto> getAllMenus() {
+        List<Menu> menus = menuRepository.findAllByMenuStateNot(MenuState.DELETED);
 
         return menus.stream()
                 .map(menu -> MenuResponseDto.builder()
@@ -132,7 +136,7 @@ public class MenuService {
                         .price(menu.getPrice())
                         .menuState(menu.getMenuState())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

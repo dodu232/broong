@@ -52,6 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
             request.setAttribute("email", claims.get("email"));
             request.setAttribute("userType", claims.get("userType"));
 
+            filterChain.doFilter(request, response);
 
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
@@ -67,6 +68,5 @@ public class JwtFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
 
-        filterChain.doFilter(request, response);
     }
 }

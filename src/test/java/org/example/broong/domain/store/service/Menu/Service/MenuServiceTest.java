@@ -1,7 +1,6 @@
-package org.example.broong.domain.store.service;
+package org.example.broong.domain.store.service.Menu.Service;
 
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
-import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
@@ -18,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
 
+import static org.example.broong.domain.menu.enums.MenuState.AVAILABLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -34,7 +34,7 @@ class MenuServiceTest {
         Long storeId = 1L;
         Long userId = 100L;
 
-        MenuRequestDto request = new MenuRequestDto("된장찌개", 9000, MenuState.AVAILABLE);
+        MenuRequestDto request = new MenuRequestDto("된장찌개", 9000, String.valueOf(AVAILABLE));
 
         User notOwner = User.builder()
                 .name("손님")
@@ -76,31 +76,6 @@ class MenuServiceTest {
         assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
         assertEquals("사장님만 메뉴를 삭제할 수 있습니다.", exception.getMessage());
     }
-
-    /*@Test
-    @DisplayName("menuState 값을 잘 받아오고 있는가")
-    void getMenuState() {
-
-        // given
-        String state = "AVAILABLE";
-
-        UserType userType = UserType.USER; // 일반 사용자
-
-
-        // when
-        MenuRequestDto dto = MenuRequestDto.builder()
-                .menuState(state)
-                .build();
-
-        // when & then
-        ApiException exception = assertThrows(ApiException.class, () ->
-                menuService.deleteMenu(userType)
-        );
-
-        // then
-        assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
-        assertEquals("사장님만 메뉴를 삭제할 수 있습니다.", exception.getMessage());
-    }*/
 
 }
 
