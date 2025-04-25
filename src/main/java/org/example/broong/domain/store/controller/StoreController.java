@@ -16,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,5 +53,15 @@ public class StoreController {
         @Auth AuthUser user
     ){
         return ResponseEntity.status(HttpStatus.OK).body(service.getStoreListByUserId(user.getId()));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateStore(
+        @Auth AuthUser user,
+        @RequestBody StoreRequestDto.Update dto,
+        @PathVariable Long id
+    ){
+        service.updateStore(id, user.getId(), dto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
