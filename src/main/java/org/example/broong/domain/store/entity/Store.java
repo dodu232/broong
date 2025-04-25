@@ -53,5 +53,4 @@ public class Store extends BaseEntity {
         this.user = user;
     }
 
-
 }

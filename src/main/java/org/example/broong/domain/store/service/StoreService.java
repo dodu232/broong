@@ -3,13 +3,19 @@ package org.example.broong.domain.store.service;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
+import org.example.broong.domain.store.dto.StoreResponseDto;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
+import org.example.broong.domain.store.repository.StoreRepositoryImpl;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +36,7 @@ public class StoreService {
 
         Store saveStore = Store.builder()
             .name(dto.getName())
-            .category(dto.getCategory())
+            .category(dto.getCategory().getDisplayName())
             .openingTime(parseLocalTime(dto.getOpeningTime()))
             .closingTime(parseLocalTime(dto.getClosingTime()))
             .minOrderPrice(dto.getMinOrderPrice())
@@ -40,10 +46,29 @@ public class StoreService {
         storeRepository.save(saveStore);
     }
 
+    public Slice<StoreResponseDto.Get> getStoreList(Category category, Pageable pageable) {
+        return storeRepository.findAllByCategory(category, pageable);
+    }
+
+    public List<StoreResponseDto.Get> getStoreListByUserId(long userId){
+        List<Store> findStore = storeRepository.findByUserId(userId);
+
+        if(findStore.isEmpty()){
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "보유 중인 가게가 없습니다.");
+        }
+
+        return  findStore.stream()
+            .map(e -> new StoreResponseDto.Get(
+                e.getName(),
+                e.getOpeningTime().toString(),
+                e.getClosingTime().toString(),
+                e.getMinOrderPrice()
+            ))
+            .collect(Collectors.toList());
+    }
+
     public static LocalTime parseLocalTime(String time) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(time, fmt);
     }
-
-
 }
