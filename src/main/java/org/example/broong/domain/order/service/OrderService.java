@@ -41,19 +41,39 @@ public class OrderService {
         }
 
         // 가게 영업시간에만 주문 가능
-        Store store = orderItems.get(0).getMenu().getStore();
+        Store store = orderItems.get(0).getMenuOption().getMenu().getStore();
         LocalTime now = LocalTime.now();
         if (now.isBefore(store.getOpeningTime()) || now.isAfter(store.getClosingTime())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
-                    "영업시간이 아닙니다.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "영업시간이 아닙니다.");
         }
 
-        // 가게에서 설정한 최소 주문 금액을 만족해야 주문이 가능
+        // 장바구니에 담긴 메뉴옵션의 가격을 가져와서 총주문 금액 확인
+        int totalPrice = orderItems.stream()
+                .mapToInt(orderItem -> orderItem.getMenuOption().getPrice() * orderItem.getCount())
+                .sum();
 
-        // 장바구니에 담긴 메뉴의 가격을 가져와서 총주문 금액 확인
+        // 가게에서 설정한 최소 주문 금액을 만족해야 주문이 가능
+        if (totalPrice < store.getMinOrderPrice()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, String.format("최소 주문 금액은 %d원입니다.", store.getMinOrderPrice()));
+        }
+
+        // 주문 설정
+        Order order = new Order();
+        order.setStore(store);
+        order.setUser(user);
+        order.setTotalPrice(totalPrice);
+        order.setOrderStatus(OrderStatus.PENDING);  // 주문 생성 시 기본 상태
+
+        Order savedOrder = orderRepository.save(order);
+
+        return new OrderResponseDto(
+                savedOrder.getId(),
+                store.getId(),
+                totalPrice,
+                savedOrder.getUpdatedAt()
+        );
 
     }
-
 
     // 사용자 주문 취소
     @Transactional

@@ -3,7 +3,7 @@ package org.example.broong.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.common.BaseEntity;
+import lombok.Setter;
 import org.example.broong.domain.order.Enum.OrderStatus;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
@@ -14,8 +14,8 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-
 @Getter
+@Setter
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor
@@ -65,3 +65,4 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 }
+
