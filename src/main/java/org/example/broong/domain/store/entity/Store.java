@@ -51,7 +51,7 @@ public class Store extends BaseEntity {
 
     @Builder
     public Store(String name, Category category, LocalTime openingTime, LocalTime closingTime,
-        int minOrderPrice, User user) {
+                 int minOrderPrice, User user) {
         this.name = name;
         this.category = category;
         this.openingTime = openingTime;

@@ -27,7 +27,7 @@ public class AuthRequestDto {
         private String password;
 
         @NotBlank
-        private String  userType;
+        private String userType;
 
     }
 
