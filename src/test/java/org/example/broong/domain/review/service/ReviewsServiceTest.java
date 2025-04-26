@@ -2,6 +2,7 @@ package org.example.broong.domain.review.service;
 
 import org.example.broong.domain.reviews.Entity.Reviews;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
+import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
 import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.reviews.service.ReviewsServiceImpl;
 import org.example.broong.domain.store.Category;
@@ -10,6 +11,7 @@ import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.entity.User;
+import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +52,9 @@ public class ReviewsServiceTest {
     @Mock
     private OrdersRepository ordersRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     // 사용할 테스트용 데이터
     private final User testUser = new User(
             "email.com",
@@ -71,6 +76,13 @@ public class ReviewsServiceTest {
             10000,
             "대기"
     );
+//    private final Reviews testReview = new Reviews(
+//            testUser,
+//            testOrder,
+//            testStore,
+//            1,
+//            "내용"
+//    )
     private final CreateReviewRequestDto testCreateReviewRequestDto = new CreateReviewRequestDto(
             1,
             "내용"
@@ -81,6 +93,10 @@ public class ReviewsServiceTest {
             testStore,
             testCreateReviewRequestDto.getRating(),
             testCreateReviewRequestDto.getContents()
+    );
+    private final UpdateReviewRequestDto testUpdateReviewRequestDto = new UpdateReviewRequestDto(
+            2,
+            "수정된 내용"
     );
 
     @Test
@@ -142,4 +158,47 @@ public class ReviewsServiceTest {
         assertEquals("존재하지 않는 가게입니다.", exception.getMessage());
     }
 
+    // 리뷰 조회
+    @Test
+    @DisplayName("가게 ID로 리뷰를 조회하면 정상적으로 페이징 조회된다.")
+    public void getSuccess() {
+
+    }
+
+    // 리뷰 수정
+    @Test
+    @DisplayName("리뷰를 수정하면 정상적으로 수정된다.")
+    public void updateSuccess() {
+        //given
+        ReflectionTestUtils.setField(testReview, "id", 1L);
+        ReflectionTestUtils.setField(testUser, "id", 1L);
+        given(reviewsRepository.findById(1L)).willReturn(Optional.of(testReview));
+        Long testUserId = 1L;
+        Long testReviewId = 1L;
+
+        // when
+        reviewsService.updateById(testUserId, testReviewId, testUpdateReviewRequestDto);
+        // then
+        Reviews updateReview = reviewsRepository.findById(testReviewId).orElseThrow();
+        assertEquals(testReview, updateReview);
+    }
+
+    // 리뷰 삭제
+    @Test
+    @DisplayName("리뷰를 삭제하면 정상적으로 삭제된다.")
+    public void deleteSuccess() {
+        //given
+        ReflectionTestUtils.setField(testReview, "id", 1L);
+        ReflectionTestUtils.setField(testUser, "id", 1L);
+        given(reviewsRepository.findById(1L)).willReturn(Optional.of(testReview));
+        Long testUserId = 1L;
+        Long testReviewId = 1L;
+
+        // when
+        reviewsService.deleteById(testUserId, testReviewId);
+
+        //then
+        Reviews deletedReview = reviewsRepository.findById(testReviewId).orElseThrow();
+        assertEquals(testReview, deletedReview);
+    }
 }

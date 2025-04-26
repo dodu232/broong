@@ -54,6 +54,9 @@ public class ReviewsServiceImpl implements ReviewsService {
     // storeId 기준 리뷰 페이징 조회 메서드
     @Override
     public Slice<FindReviewByStoreResponseDto> getReviewsListByStore(Long storeId, Pageable pageable) {
+        if (storeId == null) {
+            throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다.");
+        }
         return reviewsRepository.findReviewListByStoreId(storeId, pageable);
     }
 
