@@ -2,7 +2,6 @@ package org.example.broong.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.order.Enum.OrderStatus;
-import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
 import org.example.broong.domain.order.entity.Order;
@@ -32,7 +31,7 @@ public class OrderService {
 
     // 사용자 주문 생성
     @Transactional
-    public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
+    public OrderResponseDto createOrder(Long userId) {
 
         User user = userService.getById(userId);
         List<OrderItem> orderItems = orderItemService.getOrderItems(userId);
