@@ -6,14 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.broong.domain.order.Enum.OrderStatus;
 
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCreateRequestDto {
+public class OrderStatusUpdateRequestDto {
 
-
-    @NotNull(message = "가게ID는 필수입니다.")
-    private Long storeId;
+    @NotNull
+    private OrderStatus orderStatus;
 
 }

@@ -1,5 +1,6 @@
 package org.example.broong.domain.order.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.broong.domain.order.Enum.OrderStatus;
@@ -7,6 +8,7 @@ import org.example.broong.domain.order.Enum.OrderStatus;
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class OrderResponseDto {
     private final Long id;
     private final Long storeId;
@@ -14,12 +16,12 @@ public class OrderResponseDto {
     private final LocalDateTime updatedAt;
 
 
-    public OrderResponseDto(Long id, Long storeId, Integer totalPrice, LocalDateTime updatedAt) {
-        this.id = id;
-        this.storeId = storeId;
-        this.totalPrice = totalPrice;
-        this.updatedAt = updatedAt;
-
-    }
+//    public OrderResponseDto(Long id, Long storeId, Integer totalPrice, LocalDateTime updatedAt) {
+//        this.id = id;
+//        this.storeId = storeId;
+//        this.totalPrice = totalPrice;
+//        this.updatedAt = updatedAt;
+//
+//    }
 
 }

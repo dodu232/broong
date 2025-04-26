@@ -30,48 +30,87 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
 
+    // 사용자 주문 생성
     @Transactional
     public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
 
         User user = userService.getById(userId);
         List<OrderItem> orderItems = orderItemService.getOrderItems(userId);
         if (orderItems.isEmpty()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "장바구니가 비어있습니다.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오더 아이템이 비어있습니다.");
         }
 
         // 가게 영업시간에만 주문 가능
-        Store store = orderItems.get(0).getMenu().get();
+        Store store = orderItems.get(0).getMenu().getStore();
         LocalTime now = LocalTime.now();
         if (now.isBefore(store.getOpeningTime()) || now.isAfter(store.getClosingTime())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
                     "영업시간이 아닙니다.");
         }
 
-        // 장바구니에 담긴 메뉴의 가격을 가져와서 총주문 금액 확인
+        // 오더아이템에 담긴 메뉴의 가격을 가져와서 총주문 금액 확인
     }
 
 
+    // 사용자 주문 취소
+    @Transactional
     public OrderStatusResponseDto cancelOrder(Long userId, Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "주문을 찾을 수 없습니다."));
+        Order order = getOrderById(orderId);
 
-        if (!ObjectUtils.nullSafeEquals(userId, order.getUser().getId())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "유저만 취소 할 수 있습니다.");
-        }
+        validateUserOrder(order, userId);
+//                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "주문을 찾을 수 없습니다."));
+
+//        if (!ObjectUtils.nullSafeEquals(userId, order.getUser().getId())) {
+//            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "주문한 유저만 취소 할 수 있습니다.");
+//        }
 
         if (!OrderStatus.PENDING.equals(order.getOrderStatus())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"거절할 수 없습니다.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"주문한 유저만 취소 할 수 없습니다.");
         }
 
-        order.updateOrderStatus(OrderStatus.REJECTED);
+        order.updateOrderStatus(OrderStatus.CANCELED);
 
         return OrderStatusResponseDto.from(order);
     }
 
+    // 오너 주문 상태 변경
+    @Transactional
+    public OrderStatusResponseDto changeOrderStatus(Long ownerId, Long orderId, OrderStatus newStatus ) {
+        Order order = getOrderById(orderId);
+
+        validateOwnerOrder(order, ownerId);
+
+        if (!OrderStatus.PENDING.equals(order.getOrderStatus())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"변경할 수 없는 주문입니다.");
+        }
+
+        if (!isAllowedChangeStatus(newStatus)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "허용되지 않은 주문 상태입니다.");
+        }
+
+        order.updateOrderStatus(newStatus);
+        return OrderStatusResponseDto.from(order);
+    }
+
+    private void validateUserOrder(Order order, Long userId) {
+        if (!ObjectUtils.nullSafeEquals(userId, order.getStore().getId())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "주문한 유저가 아닙니다.");
+        }
+    }
+
+    private void validateOwnerOrder(Order order, Long ownerId){
+        if (!ObjectUtils.nullSafeEquals(ownerId, order.getStore().getId())) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오너만 주문 상태를 변경할 수 있습니다.");
+        }
+    }
+
+    private boolean isAllowedChangeStatus(OrderStatus status) {
+        return status == OrderStatus.ACCEPTED || status == OrderStatus.REJECTED;
+    }
 
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, ErrorType.NO_RESOURCE,
-                "주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE,
+                        "주문을 찾을 수 없습니다."));
     }
 }
