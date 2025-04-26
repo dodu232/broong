@@ -20,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -162,7 +164,14 @@ public class ReviewsServiceTest {
     @Test
     @DisplayName("가게 ID로 리뷰를 조회하면 정상적으로 페이징 조회된다.")
     public void getSuccess() {
+        // given
+        Pageable testPageable = PageRequest.of(0, 10);
+        Long testStoreId = 1L;
 
+        // when
+        reviewsService.getReviewsListByStore(testStoreId, testPageable);
+        // then
+        verify(reviewsRepository, times(1)).findReviewListByStoreId(any(),any());
     }
 
     // 리뷰 수정
