@@ -11,6 +11,5 @@ public enum OrderStatus {
     CANCELED("주문 취소"),
     ACCEPTED("주문 수락"),
     REJECTED("주문 거절");
-
     private final String description;
 }
