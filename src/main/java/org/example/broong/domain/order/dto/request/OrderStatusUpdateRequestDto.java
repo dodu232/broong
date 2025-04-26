@@ -11,7 +11,7 @@ import org.example.broong.domain.order.Enum.OrderStatus;
 @AllArgsConstructor
 public class OrderStatusUpdateRequestDto {
 
-    @NotNull
+    @NotNull(message = "변경할 주문 상태를 입력해주세요.")
     private OrderStatus orderStatus;
 
 }

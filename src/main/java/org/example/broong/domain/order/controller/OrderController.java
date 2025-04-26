@@ -39,9 +39,3 @@ public class OrderController {
         return ResponseEntity.ok(orderService.changeOrderStatus(owner.getId(), orderId, dto.getOrderStatus()));
     }
 }
-//    @Order
-//    @PatchMapping("/api/orders/{orderId}/reject")
-//    public ResponseEntity<OrderStatusResponseDto> rejectOrder(@Auth AuthUser owner, @PathVariable Long orderId) {
-//        return ResponseEntity.ok(orderService.rejectOrder(owner.getId(), orderId));
-//    }
-

@@ -48,7 +48,10 @@ public class OrderService {
                     "영업시간이 아닙니다.");
         }
 
-        // 오더아이템에 담긴 메뉴의 가격을 가져와서 총주문 금액 확인
+        // 가게에서 설정한 최소 주문 금액을 만족해야 주문이 가능
+
+        // 장바구니에 담긴 메뉴의 가격을 가져와서 총주문 금액 확인
+
     }
 
 
@@ -58,14 +61,9 @@ public class OrderService {
         Order order = getOrderById(orderId);
 
         validateUserOrder(order, userId);
-//                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "주문을 찾을 수 없습니다."));
-
-//        if (!ObjectUtils.nullSafeEquals(userId, order.getUser().getId())) {
-//            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "주문한 유저만 취소 할 수 있습니다.");
-//        }
 
         if (!OrderStatus.PENDING.equals(order.getOrderStatus())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"주문한 유저만 취소 할 수 없습니다.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"조리 중인 주문은 취소할 수 없습니다.");
         }
 
         order.updateOrderStatus(OrderStatus.CANCELED);
@@ -100,7 +98,7 @@ public class OrderService {
 
     private void validateOwnerOrder(Order order, Long ownerId){
         if (!ObjectUtils.nullSafeEquals(ownerId, order.getStore().getId())) {
-                throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오너만 주문 상태를 변경할 수 있습니다.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오너만 주문 상태를 변경할 수 있습니다.");
         }
     }
 

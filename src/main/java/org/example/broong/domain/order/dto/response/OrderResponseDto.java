@@ -16,12 +16,4 @@ public class OrderResponseDto {
     private final LocalDateTime updatedAt;
 
 
-//    public OrderResponseDto(Long id, Long storeId, Integer totalPrice, LocalDateTime updatedAt) {
-//        this.id = id;
-//        this.storeId = storeId;
-//        this.totalPrice = totalPrice;
-//        this.updatedAt = updatedAt;
-//
-//    }
-
 }

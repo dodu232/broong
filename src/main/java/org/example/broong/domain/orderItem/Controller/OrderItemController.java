@@ -35,10 +35,4 @@ public class OrderItemController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/orderItems")
-    public ResponseEntity<Void> removeAllOrderItem(@Auth AuthUser user) {
-        userOrderItemService.removeAllOrderItem(user.getId());
-        return ResponseEntity.noContent().build();
-    }
-
 }
