@@ -26,8 +26,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         List<Store> entities = queryFactory
             .selectFrom(store)
             .where(
-                store.category.eq(category.getDisplayName())
-                    .and(store.deletedAt.isNull())
+                store.category.eq(category)
             )
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
@@ -41,6 +40,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
 
         List<StoreResponseDto.Get> dtos = entities.stream()
             .map(e -> new StoreResponseDto.Get(
+                e.getId(),
                 e.getName(),
                 e.getOpeningTime().toString(),
                 e.getClosingTime().toString(),
