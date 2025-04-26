@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
@@ -18,6 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
+import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 @Service
 @RequiredArgsConstructor
@@ -109,4 +113,35 @@ public class StoreService {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(time, fmt);
     }
+
+    @Transactional
+    public Store getMyStoreOrThrow(Long storeId, Long userId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
+
+        if (!store.getUser().getId().equals(userId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인의 가게만 접근할 수 있습니다.");
+        }
+
+        return store;
+    }
+
+    @Transactional
+    public Store getStoreOwnedByUser(Long storeId, Long userId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "가게를 찾을 수 없습니다."));
+
+        if (!store.getUser().getId().equals(userId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인의 가게만 접근할 수 있습니다.");
+        }
+
+        return store;
+    }
+
+    @Transactional(readOnly = true)
+    public Store getStore(Long storeId) {
+        return storeRepository.findById(storeId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "가게를 찾을 수 없습니다."));
+    }
+
 }
