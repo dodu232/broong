@@ -52,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
             request.setAttribute("email", claims.get("email"));
             request.setAttribute("userType", claims.get("userType"));
 
-            filterChain.doFilter(request, response);
+
 
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
@@ -63,9 +63,11 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("Invalid JWT token, 유효하지 않는 JWT 토큰 입니다.", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
+        filterChain.doFilter(request, response);
     }
 }

@@ -48,7 +48,7 @@ class StoreServiceTest {
             Category.FAST_FOOD,
             "09:00",
             "21:00",
-            "10000"
+            10000
         );
 
         List<Store> dummyStores = IntStream.rangeClosed(1, 3)
@@ -81,7 +81,7 @@ class StoreServiceTest {
             Category.FAST_FOOD,
             "09:00",
             "21:00",
-            "10000"
+            10000
         );
 
         // when
