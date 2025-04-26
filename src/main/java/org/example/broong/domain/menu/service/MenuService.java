@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
@@ -108,21 +109,32 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<MenuResponseDto> getAllMenus() {
-        List<Menu> menus = menuRepository.findAllByMenuStateNot(MenuState.DELETED);
+    public List<MenuResponseDto> getMenusByStore(Long storeId, Long userId, UserType userType) {
+
+        if (userType != UserType.OWNER) {
+            throw new ApiException(
+                    HttpStatus.FORBIDDEN,
+                    ErrorType.INVALID_PARAMETER,
+                    "사장님만 메뉴를 조회할 수 있습니다."
+            );
+        }
+
+        Store store = storeService.getStore(storeId);
+
+        if (!store.getUser().getId().equals(userId)) {
+            throw new ApiException(
+                    HttpStatus.FORBIDDEN,
+                    ErrorType.INVALID_PARAMETER,
+                    "본인의 가게만 조회할 수 있습니다."
+            );
+        }
+
+        List<Menu> menus = menuRepository.findAllByStoreIdAndMenuState(storeId, MenuState.AVAILABLE);
 
         return menus.stream()
-                .map(menu -> MenuResponseDto.builder()
-                        .id(menu.getId())
-                        .storeId(menu.getStore().getId())
-                        .storeName(menu.getStore().getName())
-                        .name(menu.getName())
-                        .price(menu.getPrice())
-                        .menuState(menu.getMenuState())
-                        .build())
-                .toList();
+                .map(MenuResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
-
 }
 
 

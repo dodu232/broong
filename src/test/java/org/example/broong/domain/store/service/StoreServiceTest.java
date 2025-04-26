@@ -54,7 +54,7 @@ class StoreServiceTest {
         List<Store> dummyStores = IntStream.rangeClosed(1, 3)
             .mapToObj(i -> Store.builder()
                 .name("store" + i)
-                .category(String.valueOf(Category.FAST_FOOD))
+                .category((Category.FAST_FOOD))
                 .openingTime(LocalTime.of(9, 0))
                 .closingTime(LocalTime.of(21, 0))
                 .minOrderPrice(10000)

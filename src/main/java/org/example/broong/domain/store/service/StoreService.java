@@ -138,4 +138,10 @@ public class StoreService {
         return store;
     }
 
+    @Transactional(readOnly = true)
+    public Store getStore(Long storeId) {
+        return storeRepository.findById(storeId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "가게를 찾을 수 없습니다."));
+    }
+
 }

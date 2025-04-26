@@ -5,20 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
-import org.example.broong.domain.menu.dto.response.MenuListResponseDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
-import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.service.MenuService;
-import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.store.repository.StoreRepository;
-import org.example.broong.global.exception.ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 @RestController
 @RequestMapping("/stores/{storeId}/menus")
@@ -59,8 +52,15 @@ public class MenuController {
     }
 
     @GetMapping
-    public ResponseEntity<MenuListResponseDto> getAllMenus() {
-        List<MenuResponseDto> menus = menuService.getAllMenus();
-        return ResponseEntity.ok(new MenuListResponseDto(menus, menus.size()));
+    public ResponseEntity<List<MenuResponseDto>> getMenusByStore(
+            @Valid @PathVariable Long storeId,
+            @Auth AuthUser authUser) {
+        List<MenuResponseDto> menus = menuService.getMenusByStore(
+                storeId,
+                authUser.getId(),
+                authUser.getUserType()
+        );
+        return ResponseEntity.ok(menus);
     }
+
 }
