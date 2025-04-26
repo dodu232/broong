@@ -12,7 +12,6 @@ import org.example.broong.domain.order.Enum.OrderStatus;
 @AllArgsConstructor
 public class OrderCreateRequestDto {
 
-
     @NotNull(message = "가게ID는 필수입니다.")
     private Long storeId;
 
