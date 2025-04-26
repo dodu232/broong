@@ -24,7 +24,7 @@ public class QStore extends EntityPathBase<Store> {
 
     public final org.example.broong.domain.common.QBaseEntity _super = new org.example.broong.domain.common.QBaseEntity(this);
 
-    public final StringPath category = createString("category");
+    public final EnumPath<org.example.broong.domain.store.Category> category = createEnum("category", org.example.broong.domain.store.Category.class);
 
     public final TimePath<java.time.LocalTime> closingTime = createTime("closingTime", java.time.LocalTime.class);
 

@@ -65,7 +65,6 @@ public class JwtFilter extends OncePerRequestFilter {
             log.error("Invalid JWT token, 유효하지 않는 JWT 토큰 입니다.", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
-        
         filterChain.doFilter(request, response);
     }
 }
