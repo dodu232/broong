@@ -1,6 +1,5 @@
 package org.example.broong.config;
 
-import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;

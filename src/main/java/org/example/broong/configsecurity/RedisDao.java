@@ -1,5 +1,6 @@
 package org.example.broong.configsecurity;
 
+import java.sql.Timestamp;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,9 +22,26 @@ public class RedisDao {
         return  redisTemplate.opsForValue().get(key);
     }
 
+    // 로그아웃 시 필요
     public void deleteRefreshToken(String key) {
         redisTemplate.delete(key);
     }
+
+    // 로그아웃 시 필요
+    public boolean hasKey(String key){
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    // 액세스 토큰 블랙리스트에서 관리하기
+    public void setBlackList(String accesstoken, String msg, Long minutes){
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(msg.getClass()));
+        redisTemplate.opsForValue().set(accesstoken, msg, minutes, TimeUnit.MINUTES);
+    }
+
+    public String getBlackList(String key){
+        return redisTemplate.opsForValue().get(key);
+    }
+
 
 }
 

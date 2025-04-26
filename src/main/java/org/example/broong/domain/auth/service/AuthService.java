@@ -61,7 +61,6 @@ public class AuthService {
             throw new ApiException(HttpStatus.BAD_REQUEST,INVALID_PARAMETER, " 비밀번호가 일치하지 않습니다.");
         }
 
-
         String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserType());
 
         return new AuthResponseDto(bearerToken);

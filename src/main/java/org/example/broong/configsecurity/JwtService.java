@@ -1,5 +1,6 @@
 package org.example.broong.configsecurity;
 
+import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 import io.jsonwebtoken.Claims;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class JwtService {
 
-
     @Value("${access.secret.key}")
     private String accessSecretKey;
     @Value("${refresh.secret.key}")
@@ -47,7 +47,6 @@ public class JwtService {
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-
 
     private Key keyAc;
     private Key keyRf;
@@ -99,39 +98,40 @@ public class JwtService {
 
     // token 앞에 글자 삭제
     public Optional<String> substringToken(HttpServletRequest request, String type) {
-        if(type.equals("access")){
-            return Optional.ofNullable(request.getHeader(accessHeader))
-                    .filter(accessToken -> accessToken.startsWith("Bearer "))
-                    .map(accessToken -> accessToken.substring(7) );
+        String header = resolveHeader(type);
+
+        if(header == null){
+            return Optional.empty();
         }
-        if(type.equals("refresh")){
-            return Optional.ofNullable(request.getHeader(refreshHeader))
-                    .filter(refreshToken -> refreshToken.startsWith("Bearer "))
-                    .map(refreshToken -> refreshToken.substring(7) );
-        }
-        return null;
+
+        return Optional.ofNullable(request.getHeader(header))
+                .filter(refreshToken -> refreshToken.startsWith("Bearer "))
+                .map(refreshToken -> refreshToken.substring(7) );
+
     }
+
 
     // token 값 추출
     public Claims extractClaims(String token, String type) {
-        Key key = null;
-        if(type.equals("access")){
 
+        Key key = resolveKey(type);
+
+        if(key == null){
+            throw new ApiException(HttpStatus.BAD_REQUEST, INVALID_PARAMETER, "Key값이 null 값입니다.");
         }
-        if(type.equals("refresh")){
-            key = keyRf;
-        }
+
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+
         if(claims == null){
             throw new ApiException(HttpStatus.BAD_REQUEST, NO_RESOURCE, "잘못된 JWT 토큰입니다.");
         }
+
         return claims;
     }
-
 
     public String extractEmail(Claims claims){
         return claims.get("email").toString();
@@ -139,12 +139,12 @@ public class JwtService {
 
     // Sender
 
-    public void sendAccessToken(HttpServletResponse response, String accessToken){
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        response.setHeader(accessHeader, accessToken);
-        log.info("재발급된 Access Token : {}", accessToken);
-    }
+//    public void sendAccessToken(HttpServletResponse response, String accessToken){
+//        response.setStatus(HttpServletResponse.SC_OK);
+//
+//        response.setHeader(accessHeader, accessToken);
+//        log.info("재발급된 Access Token : {}", accessToken);
+//    }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response,String accessToken, String refreshToken){
         response.setStatus(HttpServletResponse.SC_OK);
@@ -160,20 +160,19 @@ public class JwtService {
 
     public boolean isValidToken(String token, String type) {
         try {
-            if (type.equals("access")){
-                Jwts.parserBuilder()
-                        .setSigningKey(keyAc)
-                        .build()
-                        .parseClaimsJws(token);
-                return true;
+
+            Key key = resolveKey(type);
+
+            if(key == null){
+                throw new ApiException(HttpStatus.BAD_REQUEST, INVALID_PARAMETER, "Key값이 null 값입니다.");
             }
-            if (type.equals("refresh")){
-                Jwts.parserBuilder()
-                        .setSigningKey(keyRf)
-                        .build()
-                        .parseClaimsJws(token);
-                return true;
-            }
+
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+
+            return true;
 
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
@@ -187,9 +186,26 @@ public class JwtService {
         return false;
     }
 
+    private String resolveHeader(String type){
+        if(type.equals("access")){
+            return accessHeader;
+        }
+        if(type.equals("refresh")){
+            return refreshHeader;
+        }
+        return null;
+    }
 
+    private Key resolveKey(String type){
+        if(type.equals("access")){
+            return keyAc;
+        }
+        if(type.equals("refresh")){
+            return keyRf;
+        }
+        return null;
 
-
+    }
 
 
 }
