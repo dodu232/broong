@@ -101,6 +101,7 @@ public class StoreService {
         storeRepository.delete(findStore);
     }
 
+    // ReviewsService에서 store 조회용으로 필요해서 만들었습니다.
     public static LocalTime parseLocalTime(String time) {
         if (time == null || time.isBlank()) {
             return null;
