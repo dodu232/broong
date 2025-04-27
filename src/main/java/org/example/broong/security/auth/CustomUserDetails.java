@@ -57,6 +57,7 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    // 탈퇴한 회원의 경우 로그인 못함
     @Override
     public boolean isEnabled() {
         return this.getDeletedAt() == null;
