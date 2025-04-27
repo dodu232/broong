@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.order.Enum.OrderStatus;
+import org.example.broong.domain.order.enums.OrderStatus;
 
 @Getter
 @NoArgsConstructor

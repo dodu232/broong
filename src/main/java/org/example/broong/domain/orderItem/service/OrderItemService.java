@@ -2,7 +2,11 @@ package org.example.broong.domain.orderItem.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.menu.entity.MenuOptions;
+import org.example.broong.domain.menu.repository.MenuOptionRepository;
+import org.example.broong.domain.order.entity.Order;
 import org.example.broong.domain.order.repository.OrderRepository;
+import org.example.broong.domain.orderItem.dto.request.AddToOrderItemRequestDto;
 import org.example.broong.domain.orderItem.dto.response.UserOrderItemResponseDto;
 import org.example.broong.domain.orderItem.entity.OrderItem;
 import org.example.broong.domain.orderItem.repository.OrderItemRepository;
@@ -14,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.List;
 
 @Service
@@ -23,23 +26,27 @@ import java.util.List;
 public class OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
-    private final MenuRepoisitory menuRepository;
+    private final OrderRepository orderRepository;
+    private final MenuOptionRepository menuOptionRepository;
     private final UserService userService;
 
     @Transactional
-    public UserOrderItemResponseDto addOrderItem(Long userId, @Valid UserOrderItemResponseDto dto) {
+    public UserOrderItemResponseDto addOrderItem(Long userId, AddToOrderItemRequestDto dto) {
         User user = userService.getById(userId);
 
-        Menu menu = menuRepository.findById(dto.getMenuId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
+        Order order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "주문을 찾을 수 없습니다."));
 
-        OrderItem orderItem = OrderItemRepository.findById(userId, dto.getMenuId()).map(existingOrderItem -> {
+        MenuOptions menuOption = menuOptionRepository.findById(dto.getMenuOptionId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "메뉴 옵션을 찾을 수 없습니다."));
 
-        })
+        OrderItem orderItem = new OrderItem(order, menuOption, dto.getCount());
+        orderItemRepository.save(orderItem);
+
+        return UserOrderItemResponseDto.from(orderItem);
     }
 
-    public List<OrderItem> getOrderItems(Long userId) {
-        return OrderRepository.findByUserId(userId);
+    public List<OrderItem> getOrderItem(Long userId) {
+        return orderItemRepository.findByOrderUserId(userId);
     }
-
 }

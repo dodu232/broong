@@ -1,10 +1,7 @@
 package org.example.broong.domain.order.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.example.broong.domain.order.Enum.OrderStatus;
 
 import java.time.LocalDateTime;
 

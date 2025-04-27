@@ -1,7 +1,7 @@
 package org.example.broong.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.order.Enum.OrderStatus;
+import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
 import org.example.broong.domain.order.entity.Order;
@@ -34,7 +34,7 @@ public class OrderService {
     public OrderResponseDto createOrder(Long userId) {
 
         User user = userService.getById(userId);
-        List<OrderItem> orderItems = orderItemService.getOrderItems(userId);
+        List<OrderItem> orderItems = orderItemService.getOrderItem(userId);
         if (orderItems.isEmpty()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오더 아이템이 비어있습니다.");
         }

@@ -1,7 +1,7 @@
 package org.example.broong.domain.order.dto.response;
 
 import lombok.Getter;
-import org.example.broong.domain.order.Enum.OrderStatus;
+import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.entity.Order;
 
 @Getter

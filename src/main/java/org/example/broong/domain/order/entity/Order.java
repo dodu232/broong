@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.broong.domain.order.Enum.OrderStatus;
+import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.global.exception.ApiException;
