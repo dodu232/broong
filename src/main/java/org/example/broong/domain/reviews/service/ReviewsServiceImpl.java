@@ -55,7 +55,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     // storeId 기준 리뷰 페이징 조회 메서드
     @Override
     public Slice<FindReviewByStoreResponseDto> getReviewsListByStore(Long storeId, Pageable pageable) {
-        storeService.findStore(storeId);
+        storeService.checkActiveStore(storeId);
         return reviewsRepository.findReviewListByStoreId(storeId, pageable);
     }
 

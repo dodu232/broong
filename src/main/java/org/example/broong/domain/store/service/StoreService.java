@@ -102,7 +102,7 @@ public class StoreService {
     }
 
     // store Id 조회시 store 의 존재여부와 폐업 여부를 확인하는 메서드
-    public void findStore(Long storeId) {
+    public void checkActiveStore(Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다."));
         if (store.getDeletedAt() != null) {
