@@ -78,6 +78,13 @@ public class ReviewsServiceTest {
             10000,
             "대기"
     );
+//    private final Reviews testReview = new Reviews(
+//            testUser,
+//            testOrder,
+//            testStore,
+//            1,
+//            "내용"
+//    )
     private final CreateReviewRequestDto testCreateReviewRequestDto = new CreateReviewRequestDto(
             1,
             "내용"
