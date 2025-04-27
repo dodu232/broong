@@ -33,7 +33,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final RedisDao redisDao;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${refresh.expiration}")
     private long refreshExpiration;
@@ -115,9 +114,9 @@ public class JwtFilter extends OncePerRequestFilter {
     // refresh token 재발급 및 redis에 업데이트
     private String reIssueRefreshToken(String email) {
 
-        String refreshToken = jwtService.generateRefreshToken(email).substring(7);
+        String refreshToken = jwtService.generateRefreshToken(email);
 
-        redisDao.setRefreshToken(email, refreshToken, refreshExpiration);
+        redisDao.setRefreshToken(email, refreshToken.substring(7), refreshExpiration);
 
         return refreshToken;
     }

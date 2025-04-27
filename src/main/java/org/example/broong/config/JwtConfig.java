@@ -65,7 +65,7 @@ public class JwtConfig {
 
     @Bean
     public JwtFilter jwtFilter(RedisDao redisDao) {
-        return new JwtFilter(jwtService, redisDao, userRepository, passwordEncoder);
+        return new JwtFilter(jwtService, redisDao, userRepository);
     }
 
     @Bean
