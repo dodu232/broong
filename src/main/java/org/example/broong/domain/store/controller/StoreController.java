@@ -3,7 +3,6 @@ package org.example.broong.domain.store.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
@@ -35,7 +34,7 @@ public class StoreController {
     @PostMapping
     public ResponseEntity<Void> addStore(
         @Valid @RequestBody StoreRequestDto.Add dto,
-        @Auth AuthUser user
+        AuthUser user
     ) {
         service.addStore(dto, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -51,14 +50,14 @@ public class StoreController {
 
     @GetMapping("/owner")
     public ResponseEntity<List<Get>> getStore(
-        @Auth AuthUser user
+        AuthUser user
     ){
         return ResponseEntity.status(HttpStatus.OK).body(service.getStoreListByUserId(user.getId()));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateStore(
-        @Auth AuthUser user,
+        AuthUser user,
         @Valid @RequestBody StoreRequestDto.Update dto,
         @PathVariable Long id
     ){
@@ -68,7 +67,7 @@ public class StoreController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteStore(
-        @Auth AuthUser user,
+        AuthUser user,
         @PathVariable Long id
     ){
         service.deleteStore(id, user.getId());

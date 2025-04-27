@@ -2,7 +2,6 @@ package org.example.broong.domain.reviews.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.Auth;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
@@ -28,7 +27,7 @@ public class ReviewsController {
     // 리뷰 생성 API
     @PostMapping("/{orderId}")
     public ResponseEntity<Void> create(
-            @Auth AuthUser authUser,
+            AuthUser authUser,
             @PathVariable Long orderId,
             @Valid @RequestBody CreateReviewRequestDto createReviewRequestDto
     ) {
@@ -53,7 +52,7 @@ public class ReviewsController {
     // 리뷰 id 기준 리뷰 수정 API
     @PatchMapping("/{reviewId}")
     public ResponseEntity<UpdateReviewResponseDto> updateById(
-            @Auth AuthUser authUser,
+            AuthUser authUser,
             @Valid @RequestBody UpdateReviewRequestDto requestDto,
             @PathVariable Long reviewId
     ) {
@@ -65,7 +64,7 @@ public class ReviewsController {
     // 리뷰 id 기준 리뷰 삭제 API
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(
-            @Auth AuthUser authUser, @PathVariable Long reviewId
+            AuthUser authUser, @PathVariable Long reviewId
     ) {
         reviewsService.deleteById(authUser.getId(), reviewId);
         return ResponseEntity
