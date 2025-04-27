@@ -1,4 +1,4 @@
-package org.example.broong.configsecurity;
+package org.example.broong.security.util;
 
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;

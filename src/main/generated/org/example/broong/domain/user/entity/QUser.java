@@ -31,6 +31,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final EnumPath<org.example.broong.domain.user.enums.LoginType> loginType = createEnum("loginType", org.example.broong.domain.user.enums.LoginType.class);
+
     public final StringPath name = createString("name");
 
     public final StringPath password = createString("password");

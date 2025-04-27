@@ -1,5 +1,6 @@
 package org.example.broong.domain.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
@@ -20,17 +21,26 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDto> signup(@Valid @RequestBody AuthRequestDto.Singup requestDto) {
+    public ResponseEntity<Void> signup(@Valid @RequestBody AuthRequestDto.Singup requestDto) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(requestDto));
-
-    }
-
-    @PostMapping("/signin")
-    public ResponseEntity<AuthResponseDto> signin(@Valid @RequestBody AuthRequestDto.Signin requestDto){
-
-        return ResponseEntity.status(HttpStatus.OK).body(authService.signin(requestDto));
+        authService.signup(requestDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(requestDto));
 
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        authService.logout(request);
+        return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
+
+
+//    @PostMapping("/signin")
+//    public ResponseEntity<AuthResponseDto> signin(@Valid @RequestBody AuthRequestDto.Signin requestDto){
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(authService.signin(requestDto));
+//
+//    }
 
 }

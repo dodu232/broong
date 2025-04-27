@@ -1,4 +1,4 @@
-package org.example.broong.configsecurity;
+package org.example.broong.security.jwt;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
@@ -71,7 +71,7 @@ public class JwtService {
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(ACCESS_TOKEN_SUBJECT)
-                        .setSubject(String.valueOf(userId))
+                        .claim("userId",String.valueOf(userId))
                         .claim("email", email)
                         .claim("userType", usertype)
                         .setExpiration(new Date(date.getTime() + accessExpiration))
@@ -133,19 +133,13 @@ public class JwtService {
         return claims;
     }
 
+    // email 값 가져오기
     public String extractEmail(Claims claims){
         return claims.get("email").toString();
     }
 
-    // Sender
 
-//    public void sendAccessToken(HttpServletResponse response, String accessToken){
-//        response.setStatus(HttpServletResponse.SC_OK);
-//
-//        response.setHeader(accessHeader, accessToken);
-//        log.info("재발급된 Access Token : {}", accessToken);
-//    }
-
+    // 헤더에 토큰 값 설정
     public void sendAccessAndRefreshToken(HttpServletResponse response,String accessToken, String refreshToken){
         response.setStatus(HttpServletResponse.SC_OK);
 
@@ -158,6 +152,7 @@ public class JwtService {
 
     // validator
 
+    // 유효성 검사
     public boolean isValidToken(String token, String type) {
         try {
 
@@ -186,6 +181,7 @@ public class JwtService {
         return false;
     }
 
+    // 헤더 타입 결정
     private String resolveHeader(String type){
         if(type.equals("access")){
             return accessHeader;
@@ -196,6 +192,7 @@ public class JwtService {
         return null;
     }
 
+    // 시크릿 키 결정
     private Key resolveKey(String type){
         if(type.equals("access")){
             return keyAc;

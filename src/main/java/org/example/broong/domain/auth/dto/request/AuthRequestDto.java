@@ -29,6 +29,10 @@ public class AuthRequestDto {
         @NotBlank
         private String userType;
 
+        @NotBlank
+        private String loginType;
+
+
     }
 
     // 로그인

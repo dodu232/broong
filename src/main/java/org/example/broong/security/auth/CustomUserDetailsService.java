@@ -1,4 +1,4 @@
-package org.example.broong.configsecurity;
+package org.example.broong.security.auth;
 
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
@@ -24,14 +24,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<User> findUser = userRepository.findByEmail(username);
+        User findUser = userRepository.findByEmail(username).orElseThrow(() ->
+                new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
 
-        User user = findUser.orElseThrow(() ->
-                new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "존재하지 않는 유저 입니다."));
 
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+user.getUserType().name()));
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+findUser.getUserType().name()));
 
-        return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), authorities);
+        return new CustomUserDetails(findUser.getId(), findUser.getEmail(), findUser.getPassword(), findUser.getUserType(), authorities);
 
     }
 }

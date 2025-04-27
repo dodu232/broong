@@ -1,5 +1,7 @@
-package org.example.broong.configsecurity;
+package org.example.broong.security.jwt;
 
+import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
+import static org.example.broong.global.exception.ErrorType.NOT_LOGGED_IN;
 import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 import io.jsonwebtoken.Claims;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.global.exception.ApiException;
+import org.example.broong.security.RedisDao;
+import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +26,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -71,6 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
     // refresh token이 있으면 access token이 만료된 것 -> rtr방식에 따라 액세스 토큰 재발급과 동시에 리프레시 토큰도 재발급
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response,
             String refreshToken) {
+
         String email = jwtService.extractEmail(
                 jwtService.extractClaims(refreshToken, "refresh"));
 
@@ -78,32 +82,37 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // redis에 refresh token이 존재하는지 여부와 일치여부를 확인하고 맞으면 access token과 refresh token 재발급
         if(findRefreshToken != null && findRefreshToken.equals(refreshToken)){
-            userRepository.findByEmail(email).ifPresent(user -> {
 
-                String reIssuedRefreshToken = reIssuedRefreshToken(email);
+            User findUser = userRepository.findByEmail(email).orElseThrow(() ->
+                    new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
 
-                jwtService.sendAccessAndRefreshToken(
-                        response,
-                        jwtService.generateAccessToken(
-                                user.getId(),
-                                user.getEmail(),
-                                user.getUserType()),
-                        reIssuedRefreshToken);
-            });
+            String reIssuedRefreshToken = reIssueRefreshToken(email);
+
+            jwtService.sendAccessAndRefreshToken(
+                    response,
+                    jwtService.generateAccessToken(
+                            findUser.getId(),
+                            findUser.getEmail(),
+                            findUser.getUserType()),
+                    reIssuedRefreshToken);
 
         }else {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "유효하지 않은 리프레시 토큰입니다.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, INVALID_PARAMETER, "유효하지 않은 리프레시 토큰입니다.");
         }
     }
 
     // refresh token 재발급 및 redis에 업데이트
-    private String reIssuedRefreshToken(String email) {
+    private String reIssueRefreshToken(String email) {
+
         String refreshToken = jwtService.generateRefreshToken(email);
+
         redisDao.setRefreshToken(email, refreshToken, refreshExpiration);
+
         return refreshToken;
     }
 
-    // 블랙리스트 확인 부분 추가해야함
+    // 블랙리스트 확인 부분 추가해야함 -> 추가
+    // 액세스 토큰 유효성 검사 및 authentication에 값 넣어줌
     public void checkAccessTokenAndAuthentication(HttpServletRequest request,
             HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -116,16 +125,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
                     String email = jwtService.extractEmail(claims);
 
-                    String blackList = redisDao.getBlackList(email);
+                    String blackList = redisDao.getBlackList(accessToken);
 
-                    if(blackList != null && blackList.equals(accessToken)){
-                        throw new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "유효하지 않은 access 토큰입니다.");
+                    log.info("access {} blackList {}", accessToken,blackList);
+
+                    if(blackList != null){
+                        throw new ApiException(HttpStatus.UNAUTHORIZED, NOT_LOGGED_IN, "유효하지 않은 access 토큰입니다.");
                     }
 
-                    userRepository.findByEmail(email)
-                            .ifPresent(this::saveAuthentication);
-                    });
+                    User findUser = userRepository.findByEmail(email).orElseThrow(() ->
+                            new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
 
+                    saveAuthentication(findUser);
+
+                    request.setAttribute("userId", Long.parseLong((String) claims.get("userId")));
+                    request.setAttribute("email", claims.get("email"));
+                    request.setAttribute("userType", claims.get("userType"));
+                    });
 
         filterChain.doFilter(request, response);
     }
@@ -133,9 +149,9 @@ public class JwtFilter extends OncePerRequestFilter {
     public void saveAuthentication(User user){
         String password = user.getPassword();
 
-        if(password == null){
-            password = passwordEncoder.encode(RandomUtil.generatRandowPassword());
-        }
+//        if(password == null){
+//            password = passwordEncoder.encode(RandomUtil.generatRandowPassword());
+//        }
 
         List<SimpleGrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_"+user.getUserType().name()));
@@ -144,9 +160,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getUserType(),
                 authorities)
                 ;
-
 
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null,

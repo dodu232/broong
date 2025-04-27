@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.common.BaseEntity;
+import org.example.broong.domain.user.enums.LoginType;
 import org.example.broong.domain.user.enums.UserType;
 
 @Getter
@@ -39,26 +40,20 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
+
     @Builder
-    public User(String email, String password, String name, UserType userType){
+    public User(String email, String password, String name, UserType userType, LoginType loginType){
         this.email = email;
         this.password = password;
         this.name = name;
         this.userType = userType;
+        this.loginType = loginType;
     }
 
     public void changePassword(String password){
         this.password = password;
-    }
-
-    private User(Long id, String email, UserType userType) {
-        this.id = id;
-        this.email = email;
-        this.userType = userType;
-    }
-
-    public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserType());
     }
 
     public void addPoint(int point){

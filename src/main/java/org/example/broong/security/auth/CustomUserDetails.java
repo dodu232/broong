@@ -1,7 +1,8 @@
-package org.example.broong.configsecurity;
+package org.example.broong.security.auth;
 
 import java.util.Collection;
 import lombok.Getter;
+import org.example.broong.domain.user.enums.UserType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,13 +12,15 @@ public class CustomUserDetails implements UserDetails {
     private final Long userId;
     private final String userName;
     private final String password;
+    private final UserType userType;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long userId, String email, String password,
+    public CustomUserDetails(Long userId, String email, String password,UserType userType,
             Collection<? extends GrantedAuthority> authorities) {
         this.userId = userId;
         this.userName = email;
         this.password = password;
+        this.userType = userType;
         this.authorities = authorities;
     }
 
