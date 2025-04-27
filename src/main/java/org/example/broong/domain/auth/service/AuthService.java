@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.broong.security.jwt.JwtService;
 import org.example.broong.security.auth.RedisDao;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
-import org.example.broong.domain.user.enums.LoginType;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
@@ -41,14 +40,12 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         UserType userType = UserType.of(requestDto.getUserType());
-        LoginType loginType = LoginType.of(requestDto.getLoginType());
 
         User newUser = User.builder()
                 .name(requestDto.getName())
                 .email(requestDto.getEmail())
                 .password(encodedPassword)
                 .userType(userType)
-                .loginType(loginType)
                 .build();
 
         newUser.addPoint(100);

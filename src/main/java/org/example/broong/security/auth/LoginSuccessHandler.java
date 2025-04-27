@@ -2,6 +2,7 @@ package org.example.broong.security.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.broong.security.jwt.JwtService;
@@ -23,7 +24,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) {
+            Authentication authentication) throws IOException {
         CustomUserDetails customUserDetails = extractCustomUserDetails(authentication);
 
         String accessToken = jwtService.generateAccessToken(customUserDetails.getUserId(), customUserDetails.getUsername(),customUserDetails.getUserType());
@@ -33,6 +34,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         redisDao.setRefreshToken(customUserDetails.getUsername(),refreshToken.substring(7),refreshExpiration);
 
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().write("로그인 성공.");
 
         log.info("redis 조회 {}", redisDao.getRefreshToken(customUserDetails.getUsername()));
         log.info("로그인에 성공하였습니다. 이메일 : {}", customUserDetails.getUsername());

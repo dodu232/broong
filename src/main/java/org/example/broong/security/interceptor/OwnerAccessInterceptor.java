@@ -14,7 +14,10 @@ public class OwnerAccessInterceptor implements HandlerInterceptor {
         log.info("UserType = {}", request.getAttribute("userType"));
         UserType userType = UserType.of((String) request.getAttribute("userType"));
         if(!UserType.OWNER.equals(userType)){
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Owner 권한이 필요합니다.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/plain;charset=UTF-8");
+            response.getWriter().write("Owner 권한이 필요합니다.");
             return false;
         }
         log.info("Interceptor - Owner API Access: Timestamp={}, URL={}", System.currentTimeMillis(), request.getRequestURI());

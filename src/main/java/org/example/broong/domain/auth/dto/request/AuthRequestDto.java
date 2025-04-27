@@ -29,25 +29,6 @@ public class AuthRequestDto {
         @NotBlank
         private String userType;
 
-        @NotBlank
-        private String loginType;
-
-
-    }
-
-    // 로그인
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Signin {
-
-        @NotBlank
-        @Email
-        private String email;
-
-        @NotBlank
-        private String password;
-
     }
 
 }

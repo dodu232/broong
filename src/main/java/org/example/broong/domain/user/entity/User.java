@@ -11,9 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.common.BaseEntity;
-import org.example.broong.domain.user.enums.LoginType;
 import org.example.broong.domain.user.enums.UserType;
 
 @Getter
@@ -40,16 +38,12 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
-
     @Builder
-    public User(String email, String password, String name, UserType userType, LoginType loginType){
+    public User(String email, String password, String name, UserType userType){
         this.email = email;
         this.password = password;
         this.name = name;
         this.userType = userType;
-        this.loginType = loginType;
     }
 
     public void changePassword(String password){

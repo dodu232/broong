@@ -1,8 +1,5 @@
 package org.example.broong.security.jwt;
 
-import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
-import static org.example.broong.global.exception.ErrorType.NOT_LOGGED_IN;
-import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -11,15 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
-import org.example.broong.global.exception.ApiException;
 import org.example.broong.security.auth.RedisDao;
 import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -86,8 +82,17 @@ public class JwtFilter extends OncePerRequestFilter {
         // redis에 refresh token이 존재하는지 여부와 일치여부를 확인하고 맞으면 access token과 refresh token 재발급
         if(findRefreshToken != null && findRefreshToken.equals(refreshToken)){
 
-            User findUser = userRepository.findByEmail(email).orElseThrow(() ->
-                    new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
+            Optional<User> optionalUserUser = userRepository.findByEmail(email);
+
+            if(optionalUserUser.isEmpty()){
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("존재하지 않는 유저 입니다.");
+                return;
+            }
+
+            User findUser = optionalUserUser.get();
 
             String reIssuedRefreshToken = reIssueRefreshToken(email);
 
@@ -100,8 +105,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     reIssuedRefreshToken);
 
         }else {
-
-            throw new ApiException(HttpStatus.UNAUTHORIZED, INVALID_PARAMETER, "유효하지 않은 리프레시 토큰입니다.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/plain;charset=UTF-8");
+            response.getWriter().write("유효하지 않은 refresh token 입니다.");
         }
     }
 
@@ -121,41 +128,58 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        Optional<String> opAccessToken = jwtService.substringToken(request, "access");
 
-        jwtService.substringToken(request, "access")
-                .filter(accessToken -> jwtService.isValidToken(accessToken, "access"))
-                .ifPresent(accessToken -> {
-                    Claims claims = jwtService.extractClaims(accessToken, "access");
+        if(opAccessToken.isPresent()){
+            String accessToken = opAccessToken.get();
 
-                    String email = jwtService.extractEmail(claims);
+            if(!jwtService.isValidToken(accessToken, "access")){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("유효하지 않은 access token 입니다.");
+                return;
+            }
+            Claims claims = jwtService.extractClaims(accessToken, "access");
 
-                    String blackList = redisDao.getBlackList(accessToken);
+            String email = jwtService.extractEmail(claims);
 
-                    log.info("access {} blackList {}", accessToken,blackList);
+            String blackList = redisDao.getBlackList(accessToken);
 
-                    if(blackList != null){
-                        throw new ApiException(HttpStatus.UNAUTHORIZED, NOT_LOGGED_IN, "유효하지 않은 access 토큰입니다.");
-                    }
+            log.info("access {} blackList {}", accessToken,blackList);
 
-                    User findUser = userRepository.findByEmail(email).orElseThrow(() ->
-                            new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
+            if(blackList != null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("유효하지 않은 access token 입니다.");
+                return;
+            }
 
-                    saveAuthentication(findUser);
+            Optional<User> optionalUserUser = userRepository.findByEmail(email);
 
-                    request.setAttribute("userId", Long.parseLong((String) claims.get("userId")));
-                    request.setAttribute("email", claims.get("email"));
-                    request.setAttribute("userType", claims.get("userType"));
-                    });
+            if(optionalUserUser.isEmpty()){
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("존재하지 않는 유저 입니다.");
+                return;
+            }
+
+            User findUser = optionalUserUser.get();
+
+            saveAuthentication(findUser);
+
+            request.setAttribute("userId", Long.parseLong((String) claims.get("userId")));
+            request.setAttribute("email", claims.get("email"));
+            request.setAttribute("userType", claims.get("userType"));
+        }
 
         filterChain.doFilter(request, response);
     }
 
     public void saveAuthentication(User user){
         String password = user.getPassword();
-
-//        if(password == null){
-//            password = passwordEncoder.encode(RandomUtil.generatRandowPassword());
-//        }
 
         List<SimpleGrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_"+user.getUserType().name()));
