@@ -1,5 +1,6 @@
 package org.example.broong.security.auth;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import lombok.Getter;
 import org.example.broong.domain.user.enums.UserType;
@@ -13,14 +14,16 @@ public class CustomUserDetails implements UserDetails {
     private final String userName;
     private final String password;
     private final UserType userType;
+    private final LocalDateTime deletedAt;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long userId, String email, String password,UserType userType,
+    public CustomUserDetails(Long userId, String email, String password,UserType userType, LocalDateTime deletedAt,
             Collection<? extends GrantedAuthority> authorities) {
         this.userId = userId;
         this.userName = email;
         this.password = password;
         this.userType = userType;
+        this.deletedAt = deletedAt;
         this.authorities = authorities;
     }
 
@@ -56,6 +59,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.getDeletedAt() == null;
     }
 }

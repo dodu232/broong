@@ -21,26 +21,19 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@Valid @RequestBody AuthRequestDto.Singup requestDto) {
+    public ResponseEntity<String> signup(@Valid @RequestBody AuthRequestDto.Singup requestDto) {
 
         authService.signup(requestDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(requestDto));
 
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
+
         authService.logout(request);
+
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
-
-
-//    @PostMapping("/signin")
-//    public ResponseEntity<AuthResponseDto> signin(@Valid @RequestBody AuthRequestDto.Signin requestDto){
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(authService.signin(requestDto));
-//
-//    }
 
 }

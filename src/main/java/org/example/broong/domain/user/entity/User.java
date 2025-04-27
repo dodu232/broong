@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,17 +47,8 @@ public class User extends BaseEntity {
         this.userType = userType;
     }
 
-    public void changePassword(String password){
-        this.password = password;
-    }
-
     public void addPoint(int point){
         this.point = this.point + point;
     }
-
-
-
-
-
 
 }

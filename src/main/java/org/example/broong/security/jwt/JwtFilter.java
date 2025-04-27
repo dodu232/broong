@@ -188,6 +188,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 user.getEmail(),
                 user.getPassword(),
                 user.getUserType(),
+                user.getDeletedAt(),
                 authorities)
                 ;
 

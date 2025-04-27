@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.broong.security.auth.CustomUserDetails;
 import org.example.broong.security.jwt.JwtService;
 import org.example.broong.security.auth.RedisDao;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
@@ -59,9 +60,6 @@ public class AuthService {
                 () -> new ApiException(HttpStatus.BAD_REQUEST, NO_RESOURCE, "액세스 토큰이 존재하지 않습니다.")
         );
 
-//        if (!jwtService.isValidToken(accessToken, "access")) {
-//            throw new ApiException(HttpStatus.UNAUTHORIZED, NO_RESOURCE, "유효하지 않은 액세스 토큰입니다.");
-//        }
 
         Claims claims = jwtService.extractClaims(accessToken, "access");
 
