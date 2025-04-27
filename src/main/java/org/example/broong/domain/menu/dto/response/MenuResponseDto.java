@@ -6,9 +6,11 @@ import lombok.Getter;
 import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.menu.enums.MenuState;
 import org.example.broong.domain.menu.entity.MenuOptions;
+import org.example.broong.domain.store.entity.Store;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,28 +27,40 @@ public class MenuResponseDto {
     private List<MenuOptionsResponseDto> options;
 
     public static MenuResponseDto fromEntity(Menu menu) {
-        List<MenuOptionsResponseDto> optionDtos = (menu.getMenuOptions() != null)
-                ? menu.getMenuOptions().stream()
+        List<MenuOptionsResponseDto> optionDtos = Optional.ofNullable(menu.getMenuOptions())
+                .orElse(Collections.emptyList())
+                .stream()
                 .map(MenuOptionsResponseDto::fromEntity)
-                .collect(Collectors.toList())
-                : Collections.emptyList();
+                .collect(Collectors.toList());
 
-        int optionTotalPrice = (menu.getMenuOptions() != null)
-                ? menu.getMenuOptions().stream()
+        int optionTotalPrice = Optional.ofNullable(menu.getMenuOptions())
+                .orElse(Collections.emptyList())
+                .stream()
                 .mapToInt(MenuOptions::getPrice)
-                .sum()
-                : 0;
+                .sum();
+
+        Long storeId = Optional.ofNullable(menu.getStore())
+                .map(Store::getId)
+                .orElse(null);
+
+        String storeName = Optional.ofNullable(menu.getStore())
+                .map(Store::getName)
+                .orElse(null);
+
+        MenuState menuState = Optional.ofNullable(menu.getMenuState())
+                .map(state -> MenuState.valueOf(state.name()))
+                .orElse(null);
 
         int totalPrice = menu.getPrice() + optionTotalPrice;
 
         return MenuResponseDto.builder()
                 .id(menu.getId())
-                .storeId(menu.getStore() != null ? menu.getStore().getId() : null)
-                .storeName(menu.getStore() != null ? menu.getStore().getName() : null)
+                .storeId(storeId)
+                .storeName(storeName)
                 .name(menu.getName())
                 .price(menu.getPrice())
-                .menuState(menu.getMenuState() != null ? MenuState.valueOf(menu.getMenuState().name()) : null)
-                .totalPrice(totalPrice) // <<=== 추가
+                .menuState(menuState)
+                .totalPrice(totalPrice)
                 .options(optionDtos)
                 .build();
     }

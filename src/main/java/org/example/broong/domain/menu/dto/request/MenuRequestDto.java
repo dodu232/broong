@@ -19,6 +19,7 @@ public class MenuRequestDto {
     @Min(0)
     private int price;
 
+    @NotBlank(message = "메뉴 상태 필수입니다.")
     @Pattern(regexp = "AVAILABLE|HOLDOUT|DELETED", message = "유효하지 않은 메뉴 상태입니다.")
     private String menuState;
 

@@ -26,17 +26,16 @@ public class MenuOptionService {
     private final StoreService storeService;
     private final MenuOptionsRepository menuOptionsRepository;
 
-    // 옵션 생성
     @Transactional
     public MenuOptionsResponseDto addMenuOption(Long storeId, Long menuId, MenuOptionsRequestDto dto, Long userId, UserType userType) {
         if (userType != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 옵션을 추가할 수 있습니다.");
         }
 
-        Store store = storeService.getMyStoreOrThrow(storeId, userId);
-
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
+
+        Store store = storeService.getMyStoreOrThrow(storeId, userId);
 
         if (menu.getStore().getId() != store.getId()) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인 가게의 메뉴만 수정할 수 있습니다.");
@@ -53,17 +52,16 @@ public class MenuOptionService {
         return MenuOptionsResponseDto.fromEntity(savedOption);
     }
 
-    // 옵션 수정
     @Transactional
     public MenuOptionsResponseDto updateMenuOption(Long storeId, Long menuId, Long optionId, MenuOptionsRequestDto dto, Long userId, UserType userType) {
         if (userType != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 옵션을 수정할 수 있습니다.");
         }
 
-        Store store = storeService.getMyStoreOrThrow(storeId, userId);
-
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
+
+        Store store = storeService.getMyStoreOrThrow(storeId, userId);
 
         if (menu.getStore().getId() != store.getId()) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인 가게의 메뉴만 수정할 수 있습니다.");
@@ -77,17 +75,16 @@ public class MenuOptionService {
         return MenuOptionsResponseDto.fromEntity(option);
     }
 
-    // 옵션 삭제
     @Transactional
     public void deleteMenuOption(Long storeId, Long menuId, Long optionId, Long userId, UserType userType) {
         if (userType != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 옵션을 삭제할 수 있습니다.");
         }
 
-        Store store = storeService.getMyStoreOrThrow(storeId, userId);
-
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
+
+        Store store = storeService.getMyStoreOrThrow(storeId, userId);
 
         if (menu.getStore().getId() != store.getId()) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인 가게의 메뉴만 수정할 수 있습니다.");

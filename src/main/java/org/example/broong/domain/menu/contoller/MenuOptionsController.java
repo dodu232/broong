@@ -7,7 +7,6 @@ import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuOptionsRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuOptionsResponseDto;
 import org.example.broong.domain.menu.service.MenuOptionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class MenuOptionsController {
             @Auth AuthUser authUser) {
 
         MenuOptionsResponseDto response = menuOptionService.addMenuOption(storeId, menuId, dto, authUser.getId(), authUser.getUserType());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{menuId}/options/{optionId}")
@@ -49,6 +48,6 @@ public class MenuOptionsController {
             @Auth AuthUser authUser) {
 
         menuOptionService.deleteMenuOption(storeId, menuId, optionId, authUser.getId(), authUser.getUserType());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
