@@ -27,6 +27,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     private final ReviewsRepository reviewsRepository;
     private final UserService userService;
+    private final StoreService storeService;
     private final OrdersRepository ordersRepository;
 
     // 리뷰 생성 메서드
@@ -37,7 +38,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         }
         Orders order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 주문입니다."));
-        if (userId == orderId) {
+        if (order.getUser() == null || userId == order.getUser().getId()) {
             new ApiException(HttpStatus.FORBIDDEN, ErrorType.INVALID_PARAMETER, "본인의 주문에만 리뷰를 남길 수 있습니다.");
         }
         if (reviewsRepository.existsByOrderId_Id(orderId)) {
@@ -54,9 +55,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     // storeId 기준 리뷰 페이징 조회 메서드
     @Override
     public Slice<FindReviewByStoreResponseDto> getReviewsListByStore(Long storeId, Pageable pageable) {
-        if (storeId == null) {
-            throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다.");
-        }
+        storeService.checkActiveStore(storeId);
         return reviewsRepository.findReviewListByStoreId(storeId, pageable);
     }
 
