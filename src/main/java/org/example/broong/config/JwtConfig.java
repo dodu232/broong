@@ -8,7 +8,7 @@ import org.example.broong.security.jwt.JwtFilter;
 import org.example.broong.security.jwt.JwtService;
 import org.example.broong.security.auth.LoginFailureHandler;
 import org.example.broong.security.auth.LoginSuccessHandler;
-import org.example.broong.security.RedisDao;
+import org.example.broong.security.auth.RedisDao;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

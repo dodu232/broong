@@ -1,4 +1,4 @@
-package org.example.broong.security;
+package org.example.broong.security.auth;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;

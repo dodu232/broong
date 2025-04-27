@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.global.exception.ApiException;
-import org.example.broong.security.RedisDao;
+import org.example.broong.security.auth.RedisDao;
 import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -73,12 +73,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // refresh token이 있으면 access token이 만료된 것 -> rtr방식에 따라 액세스 토큰 재발급과 동시에 리프레시 토큰도 재발급
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response,
-            String refreshToken) {
+            String refreshToken) throws IOException{
 
         String email = jwtService.extractEmail(
                 jwtService.extractClaims(refreshToken, "refresh"));
 
         String findRefreshToken = redisDao.getRefreshToken(email);
+
+        log.info("redis {}",findRefreshToken);
+        log.info("refreshToken {}", refreshToken);
 
         // redis에 refresh token이 존재하는지 여부와 일치여부를 확인하고 맞으면 access token과 refresh token 재발급
         if(findRefreshToken != null && findRefreshToken.equals(refreshToken)){
@@ -97,6 +100,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     reIssuedRefreshToken);
 
         }else {
+
             throw new ApiException(HttpStatus.UNAUTHORIZED, INVALID_PARAMETER, "유효하지 않은 리프레시 토큰입니다.");
         }
     }
@@ -104,7 +108,7 @@ public class JwtFilter extends OncePerRequestFilter {
     // refresh token 재발급 및 redis에 업데이트
     private String reIssueRefreshToken(String email) {
 
-        String refreshToken = jwtService.generateRefreshToken(email);
+        String refreshToken = jwtService.generateRefreshToken(email).substring(7);
 
         redisDao.setRefreshToken(email, refreshToken, refreshExpiration);
 

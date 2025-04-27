@@ -2,16 +2,10 @@ package org.example.broong.security.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.broong.domain.user.enums.UserType;
-import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.security.jwt.JwtService;
-import org.example.broong.security.RedisDao;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -37,7 +31,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
-        redisDao.setRefreshToken(customUserDetails.getUsername(),refreshToken,refreshExpiration);
+        redisDao.setRefreshToken(customUserDetails.getUsername(),refreshToken.substring(7),refreshExpiration);
 
 
         log.info("redis 조회 {}", redisDao.getRefreshToken(customUserDetails.getUsername()));

@@ -1,4 +1,4 @@
-package org.example.broong.interceptor;
+package org.example.broong.security.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
