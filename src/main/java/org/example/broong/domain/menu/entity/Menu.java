@@ -5,6 +5,9 @@ import lombok.*;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.menu.enums.MenuState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +34,9 @@ public class Menu {
     @Column(name = "menu_state", nullable = false)
     private MenuState menuState;
 
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuOptions> menuOptions = new ArrayList<>();
+
     public void update(String name, int price, MenuState state) {
         this.name = name;
         this.price = price;
@@ -40,4 +46,6 @@ public class Menu {
     public void delete() {
         this.menuState = MenuState.DELETED;
     }
+
+
 }

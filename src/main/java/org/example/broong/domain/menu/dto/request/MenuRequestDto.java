@@ -3,8 +3,12 @@ package org.example.broong.domain.menu.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class MenuRequestDto {
 
@@ -18,9 +22,6 @@ public class MenuRequestDto {
     @Pattern(regexp = "AVAILABLE|HOLDOUT|DELETED", message = "유효하지 않은 메뉴 상태입니다.")
     private String menuState;
 
-    public MenuRequestDto(String name, int price, String menuState) {
-        this.name = name;
-        this.price = price;
-        this.menuState = menuState;
-    }
+    private List<MenuOptionsRequestDto> menuOptions = new ArrayList<>();
+
 }

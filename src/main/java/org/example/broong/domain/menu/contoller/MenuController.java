@@ -37,7 +37,7 @@ public class MenuController {
             @RequestBody MenuRequestDto dto,
             @Auth AuthUser authUser) {
 
-        MenuResponseDto response = menuService.updateMenu(storeId, menuId, dto, authUser.getId(), authUser.getUserType());
+        MenuResponseDto response = menuService.updateMenu(storeId, menuId, dto, authUser.getUserType());
         return ResponseEntity.ok(response);
     }
 
@@ -51,6 +51,12 @@ public class MenuController {
         return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/{menuId}")
+    public ResponseEntity<MenuResponseDto> getMenuWithOptions(@PathVariable Long storeId, @PathVariable Long menuId) {
+        MenuResponseDto menu = menuService.getMenuWithOptions(storeId, menuId);
+        return ResponseEntity.ok(menu);
+    }
+
     @GetMapping
     public ResponseEntity<List<MenuResponseDto>> getMenusByStore(
             @Valid @PathVariable Long storeId,
@@ -62,5 +68,4 @@ public class MenuController {
         );
         return ResponseEntity.ok(menus);
     }
-
 }
