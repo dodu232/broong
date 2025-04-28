@@ -2,6 +2,7 @@ package org.example.broong.domain.menu.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.example.broong.domain.menu.enums.MenuState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class MenuRequestDto {
     @Pattern(regexp = "AVAILABLE|HOLDOUT|DELETED", message = "유효하지 않은 메뉴 상태입니다.")
     private String menuState;
 
+    @Builder.Default
     private List<MenuOptionsRequestDto> menuOptions = new ArrayList<>();
 
 }
