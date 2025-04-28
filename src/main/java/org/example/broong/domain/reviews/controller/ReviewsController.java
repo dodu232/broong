@@ -39,7 +39,6 @@ public class ReviewsController {
         @PathVariable Long orderId,
         @Valid @RequestBody CreateReviewRequestDto createReviewRequestDto
     ) {
-        // 임시 코드 @AuthenticationPrincipal User user
         reviewsService.create(userDetails.getUserId(), orderId, createReviewRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)

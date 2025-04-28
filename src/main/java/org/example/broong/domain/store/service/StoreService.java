@@ -109,7 +109,7 @@ public class StoreService {
     public void checkActiveStore(Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다."));
-        if (store.getDeletedAt() != null) {
+        if (!store.IsOpen()) {
             throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다.");
         }
     }

@@ -68,4 +68,8 @@ public class Store extends BaseEntity {
         this.closingTime = closingTime == null ? this.closingTime : closingTime;
         this.minOrderPrice =  minOrderPrice == null ? this.minOrderPrice : minOrderPrice;
     }
+
+    public boolean IsOpen() {
+        return getDeletedAt() == null;
+    }
 }
