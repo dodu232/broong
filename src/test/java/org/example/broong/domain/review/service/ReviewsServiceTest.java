@@ -14,6 +14,7 @@ import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.domain.user.service.UserService;
+import org.example.broong.domain.user.service.UserServiceTest;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
 import org.junit.jupiter.api.DisplayName;

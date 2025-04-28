@@ -17,6 +17,7 @@ import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.service.UserService;
+import org.example.broong.domain.user.service.UserServiceTest;
 import org.example.broong.global.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
