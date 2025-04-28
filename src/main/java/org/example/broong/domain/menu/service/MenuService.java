@@ -1,7 +1,6 @@
 package org.example.broong.domain.menu.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.entity.Menu;
@@ -51,24 +50,15 @@ public class MenuService {
 
         Menu saved = menuRepository.save(menu);
 
-        return MenuResponseDto.builder()
-                .id(saved.getId())
-                .storeId(saved.getStore().getId())
-                .storeName(store.getName())
-                .name(saved.getName())
-                .price(saved.getPrice())
-                .menuState(saved.getMenuState())
-                .build();
+        return MenuResponseDto.fromEntity(saved);
     }
 
     @Transactional
-    public MenuResponseDto updateMenu(Long storeId, Long menuId, MenuRequestDto dto, Long userId, UserType userType) {
+    public MenuResponseDto updateMenu(Long storeId, Long menuId, MenuRequestDto dto, UserType userType) {
 
         if (userType != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 수정할 수 있습니다.");
         }
-
-        Store store = storeService.getMyStoreOrThrow(storeId, userId);
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
@@ -79,14 +69,7 @@ public class MenuService {
 
         menu.update(dto.getName(), dto.getPrice(), MenuState.valueOf(dto.getMenuState()));
 
-        return MenuResponseDto.builder()
-                .id(menu.getId())
-                .storeId(menu.getStore().getId())
-                .storeName(store.getName())
-                .name(menu.getName())
-                .price(menu.getPrice())
-                .menuState(menu.getMenuState())
-                .build();
+        return MenuResponseDto.fromEntity(menu);
     }
 
     @Transactional
@@ -106,6 +89,22 @@ public class MenuService {
         }
 
         menu.delete();
+    }
+
+    @Transactional(readOnly = true)
+    public MenuResponseDto getMenuWithOptions(Long storeId, Long menuId) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
+
+        if (menu.getStore().getId() != storeId) {
+            throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "본인 가게의 메뉴만 조회할 수 있습니다.");
+        }
+
+        if (menu.getMenuState() == MenuState.DELETED) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, INVALID_PARAMETER, "삭제된 메뉴는 조회할 수 없습니다.");
+        }
+
+        return MenuResponseDto.fromEntity(menu);
     }
 
     @Transactional(readOnly = true)

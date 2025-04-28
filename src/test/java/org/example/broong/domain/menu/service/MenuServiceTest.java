@@ -38,7 +38,7 @@ public class MenuServiceTest {
 
         Store store = Store.builder()
                 .name("가게")
-                .category(String.valueOf(Category.KOREAN))
+                .category((Category.KOREAN))
                 .openingTime(LocalTime.of(9, 0))
                 .closingTime(LocalTime.of(21, 0))
                 .minOrderPrice(10000)
@@ -48,7 +48,8 @@ public class MenuServiceTest {
         ReflectionTestUtils.setField(store, "id", storeId);
 
         // when & then
-        assertThrows(ApiException.class, () -> menuService.createMenu(store.getId(), request, userId, notOwner.getUserType()));*/
+        assertThrows(ApiException.class, () -> menuService.createMenu(store.getId(), request, userId, notOwner.getUserType()));
+    }*/
     }
 
 

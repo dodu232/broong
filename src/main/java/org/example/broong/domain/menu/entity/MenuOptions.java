@@ -2,7 +2,6 @@ package org.example.broong.domain.menu.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.broong.domain.menu.entity.Menu;
 
 @Entity
 @Getter
@@ -25,5 +24,10 @@ public class MenuOptions {
 
         @Column(nullable = false)
         private int price;
+
+    public void update(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
 
 }

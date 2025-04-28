@@ -7,6 +7,7 @@ import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.reviews.service.ReviewsServiceImpl;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.testOrder.OrdersRepository;
@@ -14,6 +15,7 @@ import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
+import org.example.broong.global.exception.ErrorType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -33,8 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewsServiceTest {
@@ -50,6 +52,9 @@ public class ReviewsServiceTest {
 
     @Mock
     private StoreService storeService;
+
+    @Mock
+    private StoreRepository storeRepository;
 
     @Mock
     private OrdersRepository ordersRepository;
@@ -78,13 +83,6 @@ public class ReviewsServiceTest {
             10000,
             "대기"
     );
-//    private final Reviews testReview = new Reviews(
-//            testUser,
-//            testOrder,
-//            testStore,
-//            1,
-//            "내용"
-//    )
     private final CreateReviewRequestDto testCreateReviewRequestDto = new CreateReviewRequestDto(
             1,
             "내용"
@@ -101,6 +99,7 @@ public class ReviewsServiceTest {
             "수정된 내용"
     );
 
+    // 리뷰 생성
     @Test
     @DisplayName("리뷰를 만들면 정상적으로 된다.")
     public void createSuccess() {
@@ -114,7 +113,7 @@ public class ReviewsServiceTest {
         verify(reviewsRepository, times(1)).save(any());
     }
 
-    // 리뷰 생성: 주문이 존재하지 않을 때
+    // 리뷰 생성
     @Test
     @DisplayName("주문이 없을 경우 API 예외를 던져준다.")
     public void createFail_OrderIsNull() {
@@ -171,7 +170,44 @@ public class ReviewsServiceTest {
         // when
         reviewsService.getReviewsListByStore(testStoreId, testPageable);
         // then
-        verify(reviewsRepository, times(1)).findReviewListByStoreId(any(),any());
+        verify(reviewsRepository, times(1)).findReviewListByStoreId(any(), any());
+    }
+
+    // 리뷰 조회
+    @Test
+    @DisplayName("조회하는 가게가 없는 경우")
+    public void getFail_StoreExistsFalse() {
+        // given
+        ReflectionTestUtils.setField(testStore, "id", 1L);
+        Pageable testPageable = PageRequest.of(0, 10);
+        Long testStoreId = 2L;
+
+        // when
+        doThrow(new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다."))
+                .when(storeService).checkActiveStore(testStoreId);
+
+        // then
+        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.getReviewsListByStore(testStoreId, testPageable));
+        assertEquals("존재하지 않는 가게입니다.", exception.getMessage());
+    }
+
+    // 리뷰 조회
+    @Test
+    @DisplayName("조회하는 가게가 폐업한 경우")
+    public void getFail_StoreDeletedAtIsNotNull() {
+        // given
+        ReflectionTestUtils.setField(testStore, "id", 1L);
+        ReflectionTestUtils.setField(testStore, "deletedAt", LocalDateTime.now());
+        Pageable testPageable = PageRequest.of(0, 10);
+        Long testStoreId = 1L;
+
+        // when
+        doThrow(new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다."))
+                .when(storeService).checkActiveStore(testStoreId);
+
+        // then
+        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.getReviewsListByStore(testStoreId, testPageable));
+        assertEquals("존재하지 않는 가게입니다.", exception.getMessage());
     }
 
     // 리뷰 수정
@@ -187,8 +223,10 @@ public class ReviewsServiceTest {
 
         // when
         reviewsService.updateById(testUserId, testReviewId, testUpdateReviewRequestDto);
+
         // then
         Reviews updateReview = reviewsRepository.findById(testReviewId).orElseThrow();
+
         assertEquals(testReview, updateReview);
     }
 

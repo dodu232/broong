@@ -24,6 +24,8 @@ public class QMenu extends EntityPathBase<Menu> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<MenuOptions, QMenuOptions> menuOptions = this.<MenuOptions, QMenuOptions>createList("menuOptions", MenuOptions.class, QMenuOptions.class, PathInits.DIRECT2);
+
     public final EnumPath<org.example.broong.domain.menu.enums.MenuState> menuState = createEnum("menuState", org.example.broong.domain.menu.enums.MenuState.class);
 
     public final StringPath name = createString("name");

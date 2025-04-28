@@ -31,19 +31,4 @@ public class AuthRequestDto {
 
     }
 
-    // 로그인
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Signin {
-
-        @NotBlank
-        @Email
-        private String email;
-
-        @NotBlank
-        private String password;
-
-    }
-
 }
