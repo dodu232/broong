@@ -68,9 +68,6 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (reviews.IsDeleted()) {
             throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 리뷰입니다.");
         }
-        if (!reviews.getStoreId().IsOpen()) {
-            throw new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 가게입니다.");
-        }
         reviews.update(requestDto.getRating(), requestDto.getContents());
         return new UpdateReviewResponseDto(reviews);
     }

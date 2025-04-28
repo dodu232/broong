@@ -263,24 +263,8 @@ public class ReviewsServiceTest {
 
     // 리뷰 수정
     @Test
-    @DisplayName("리뷰를 수정할 가게가 없거나 폐업한 경우 API 예외를 던져준다.")
-    public void updateFail_3() {
-        // given
-        ReflectionTestUtils.setField(testReview, "id", 1L);
-        ReflectionTestUtils.setField(testUser, "id", 1L);
-        ReflectionTestUtils.setField(testStore, "deletedAt", LocalDateTime.now());
-        given(reviewsRepository.findById(1L)).willReturn(Optional.of(testReview));
-
-        // when
-        ApiException exception = assertThrows(ApiException.class, () -> reviewsService.updateById(testUser.getId(), testReview.getId(), testUpdateReviewRequestDto));
-        // then
-        assertEquals("존재하지 않는 가게입니다.", exception.getMessage());
-    }
-
-    // 리뷰 수정
-    @Test
     @DisplayName("본인의 리뷰가 아닌 경우 API 예외를 던져준다.")
-    public void updateFail_4() {
+    public void updateFail_3() {
         // given
         ReflectionTestUtils.setField(testReview, "id", 1L);
         ReflectionTestUtils.setField(testUser, "id", 1L);
