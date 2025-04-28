@@ -1,133 +1,257 @@
 package org.example.broong.domain.menu.service;
 
+import org.example.broong.domain.menu.dto.request.MenuOptionsRequestDto;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
-import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.entity.Menu;
+import org.example.broong.domain.menu.entity.MenuOptions;
 import org.example.broong.domain.menu.enums.MenuState;
+import org.example.broong.domain.menu.repository.MenuOptionsRepository;
 import org.example.broong.domain.menu.repository.MenuRepository;
-import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.global.exception.ApiException;
+import org.example.broong.security.auth.CustomUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.example.broong.domain.menu.enums.MenuState.AVAILABLE;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class MenuServiceTest {
+class MenuAndMenuOptionServiceTest {
 
     @InjectMocks
     private MenuService menuService;
 
-    @Mock
-    private StoreService storeService;
+    @InjectMocks
+    private MenuOptionService menuOptionService;
 
     @Mock
     private MenuRepository menuRepository;
 
+    @Mock
+    private MenuOptionsRepository menuOptionsRepository;
+
+    @Mock
+    private StoreService storeService;
+
+    private Store store;
+    private Menu menu;
+    private MenuOptions menuOption;
+    private MenuRequestDto menuRequestDto;
+    private MenuOptionsRequestDto menuOptionsRequestDto;
+    private CustomUserDetails ownerUserDetails;
+
     @BeforeEach
-    @Test
-    @DisplayName("사장님은 정상적으로 메뉴를 등록할 수 있다.")
-    void createMenu_Success() {
-        // given
-        Long storeId = 1L;
-        Long userId = 1L;
-        MenuRequestDto requestDto = new MenuRequestDto("김치찌개", 8000, "AVAILABLE", null);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
 
-        //가게 생성
-        Store store = Store.builder()
-                .name("가게이름")
-                .category(Category.BBQ)
-                .openingTime(LocalTime.of(9,0))
-                .closingTime(LocalTime.of(21,0))
-                .minOrderPrice(13000)
+        store = Store.builder()
+                .name("테스트 가게")
+                .category(null)
+                .openingTime(LocalTime.of(9, 0))
+                .closingTime(LocalTime.of(22, 0))
+                .minOrderPrice(10000)
                 .build();
+        ReflectionTestUtils.setField(store, "id", 1L);
 
-        ReflectionTestUtils.setField(store, "id", storeId);
-
-        Menu menu = Menu.builder()
+        menu = Menu.builder()
                 .store(store)
                 .name("김치찌개")
                 .price(8000)
                 .menuState(MenuState.AVAILABLE)
-                .menuOptions(new ArrayList<>()) // <<< 반드시 빈 리스트라도 초기화!!
                 .build();
         ReflectionTestUtils.setField(menu, "id", 1L);
 
-        given(storeService.getStoreOwnedByUser(storeId, userId)).willReturn(store);
+        menuOption = MenuOptions.builder()
+                .menu(menu)
+                .name("곱빼기")
+                .price(2000)
+                .build();
+        ReflectionTestUtils.setField(menuOption, "id", 1L);
+
+        menuRequestDto = MenuRequestDto.builder()
+                .name("된장찌개")
+                .price(8500)
+                .menuState("AVAILABLE")
+                .build();
+
+        menuOptionsRequestDto = MenuOptionsRequestDto.builder()
+                .name("곱빼기")
+                .price(2000)
+                .build();
+
+        ownerUserDetails = new CustomUserDetails(
+                1L,
+                "owner@example.com",
+                "1234",
+                UserType.OWNER,
+                null,
+                List.of());
+    }
+
+    // -------------------- MenuService 테스트 --------------------
+
+    @Test
+    @DisplayName("메뉴 생성 성공")
+    void createMenu_success() {
+        // given
+        given(storeService.getStoreOwnedByUser(1L, 1L)).willReturn(store);
         given(menuRepository.save(any(Menu.class))).willReturn(menu);
 
         // when
-        MenuResponseDto response = menuService.createMenu(storeId, requestDto, userId, UserType.OWNER);
+        var result = menuService.createMenu(1L, menuRequestDto, 1L, UserType.OWNER);
 
         // then
-        assertThat(response.getName()).isEqualTo("김치찌개");
-        assertThat(response.getPrice()).isEqualTo(8000);
-        assertThat(response.getStoreId()).isEqualTo(storeId);
+        assertThat(result.getName()).isEqualTo("김치찌개");
     }
 
     @Test
-    @DisplayName("사장님이 아니면 메뉴 등록 시 예외가 발생한다.")
-    void createMenu_NotOwner_ThrowsException() {
-        // given
-        Long storeId = 1L;
-        Long userId = 1l;
+    @DisplayName("메뉴 생성 실패 - 사장님이 아님")
+    void createMenu_fail_not_owner() {
+        // when & then
+        assertThatThrownBy(() -> menuService.createMenu(1L, menuRequestDto, 1L, UserType.USER))
+                .isInstanceOf(ApiException.class);
+    }
 
-        MenuRequestDto request = MenuRequestDto.builder()
-                .name("된장찌개")
+    @Test
+    @DisplayName("메뉴 수정 성공")
+    void updateMenu_success() {
+        // given
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+
+        MenuRequestDto updateDto = MenuRequestDto.builder()
+                .name("수정된 김치찌개")
                 .price(9000)
                 .menuState("AVAILABLE")
                 .build();
 
+        // when
+        var result = menuService.updateMenu(1L, 1L, updateDto, UserType.OWNER);
+
+        // then
+        assertThat(result.getName()).isEqualTo("수정된 김치찌개");
+        assertThat(result.getPrice()).isEqualTo(9000);
+    }
+
+    @Test
+    @DisplayName("메뉴 삭제 성공")
+    void deleteMenu_success() {
+        // given
+        given(storeService.getStoreOwnedByUser(1L, 1L)).willReturn(store);
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+
+        // when
+        menuService.deleteMenu(1L, 1L, ownerUserDetails);
+
+        // then
+        assertThat(menu.getMenuState()).isEqualTo(MenuState.DELETED);
+    }
+
+    @Test
+    @DisplayName("단일 메뉴 조회 성공")
+    void getMenuWithOptions_success() {
+        // given
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+
+        // when
+        var result = menuService.getMenuWithOptions(1L, 1L);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("김치찌개");
+    }
+
+    @Test
+    @DisplayName("가게 메뉴 목록 조회 성공")
+    void getMenusByStore_success() {
+        // given
+        given(storeService.getStore(1L)).willReturn(store);
+
+        User user = new User();  // User 객체 생성
+        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(store, "user", user);
+
+        given(menuRepository.findAllByStoreIdAndMenuState(1L, MenuState.AVAILABLE)).willReturn(List.of(menu));
+
+        // when
+        var result = menuService.getMenusByStore(1L, 1L, UserType.OWNER);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("김치찌개");
+    }
+
+    // -------------------- MenuOptionService 테스트 --------------------
+
+    @Test
+    @DisplayName("메뉴 옵션 추가 성공")
+    void addMenuOption_success() {
+        // given
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+        given(storeService.getMyStoreOrThrow(1L, 1L)).willReturn(store);
+        given(menuOptionsRepository.save(any(MenuOptions.class))).willReturn(menuOption);
+
+        // when
+        var result = menuOptionService.addMenuOption(1L, 1L, menuOptionsRequestDto, 1L, UserType.OWNER);
+
+        // then
+        assertThat(result.getName()).isEqualTo("곱빼기");
+    }
+
+    @Test
+    @DisplayName("메뉴 옵션 추가 실패 - 사장님이 아님")
+    void addMenuOption_fail_not_owner() {
         // when & then
-        assertThatThrownBy(() -> menuService.createMenu(storeId, request, userId, UserType.USER))
-                .isInstanceOf(ApiException.class)
-                .hasMessageContaining("사장님만 메뉴를 등록할 수 있습니다.");
-    }
-
-
-    @Test
-    @DisplayName("설명")
-    void 테스트메서드명() {
-        // given : 테스트 준비 (데이터 생성, 목 설정 등)
-        // when : 테스트 대상 메서드 호출
-        // then : 결과 검증
+        assertThatThrownBy(() -> menuOptionService.addMenuOption(1L, 1L, menuOptionsRequestDto, 1L, UserType.USER))
+                .isInstanceOf(ApiException.class);
     }
 
     @Test
-    @DisplayName("설명")
-    void 테스트메서드명1() {
-        // given : 테스트 준비 (데이터 생성, 목 설정 등)
-        // when : 테스트 대상 메서드 호출
-        // then : 결과 검증
+    @DisplayName("메뉴 옵션 수정 성공")
+    void updateMenuOption_success() {
+        // given
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+        given(storeService.getMyStoreOrThrow(1L, 1L)).willReturn(store);
+        given(menuOptionsRepository.findById(1L)).willReturn(Optional.of(menuOption));
+
+        MenuOptionsRequestDto updateDto = MenuOptionsRequestDto.builder()
+                .name("수정된 곱빼기")
+                .price(2500)
+                .build();
+
+        // when
+        var result = menuOptionService.updateMenuOption(1L, 1L, 1L, updateDto, 1L, UserType.OWNER);
+
+        // then
+        assertThat(result.getName()).isEqualTo("수정된 곱빼기");
+        assertThat(result.getPrice()).isEqualTo(2500);
     }
 
     @Test
-    @DisplayName("설명")
-    void 테스트메서드명2() {
-        // given : 테스트 준비 (데이터 생성, 목 설정 등)
-        // when : 테스트 대상 메서드 호출
-        // then : 결과 검증
+    @DisplayName("메뉴 옵션 삭제 성공")
+    void deleteMenuOption_success() {
+        // given
+        given(menuRepository.findById(1L)).willReturn(Optional.of(menu));
+        given(storeService.getMyStoreOrThrow(1L, 1L)).willReturn(store);
+        given(menuOptionsRepository.findById(1L)).willReturn(Optional.of(menuOption));
+
+        // when
+        menuOptionService.deleteMenuOption(1L, 1L, 1L, 1L, UserType.OWNER);
+
+        // then
+        then(menuOptionsRepository).should().delete(menuOption);
     }
 
 }
