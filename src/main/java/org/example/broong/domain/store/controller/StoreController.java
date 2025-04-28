@@ -8,11 +8,13 @@ import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.dto.StoreResponseDto;
 import org.example.broong.domain.store.dto.StoreResponseDto.Get;
 import org.example.broong.domain.store.service.StoreService;
+import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,9 +35,9 @@ public class StoreController {
     @PostMapping
     public ResponseEntity<Void> addStore(
         @Valid @RequestBody StoreRequestDto.Add dto,
-        AuthUser user
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        service.addStore(dto, user.getId());
+        service.addStore(dto, userDetails.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -49,27 +51,27 @@ public class StoreController {
 
     @GetMapping("/owner")
     public ResponseEntity<List<Get>> getStore(
-        AuthUser user
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(service.getStoreListByUserId(user.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(service.getStoreListByUserId(userDetails.getUserId()));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateStore(
-        AuthUser user,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @Valid @RequestBody StoreRequestDto.Update dto,
         @PathVariable Long id
     ){
-        service.updateStore(id, user.getId(), dto);
+        service.updateStore(id, userDetails.getUserId(), dto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteStore(
-        AuthUser user,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long id
     ){
-        service.deleteStore(id, user.getId());
+        service.deleteStore(id, userDetails.getUserId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
