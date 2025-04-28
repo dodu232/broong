@@ -66,7 +66,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStore(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long id
