@@ -3,6 +3,7 @@ package org.example.broong.domain.order.service;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.menu.repository.MenuRepository;
+import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Service
@@ -62,13 +64,15 @@ public class OrderService {
         }
 
         // 주문 설정
-        Order order = new Order();
-        order.setStore(store);
-        order.setMenu(menu);
-        order.setCount(dto.getCount());
-        order.setTotalPrice(totalPrice);
-        order.setOrderStatus(OrderStatus.PENDING);  // 주문 생성 시 기본 상태
-        order.setUser(user);
+        Order order = Order.builder()
+                .user(user)
+                .store(store)
+                .menu(menu)
+                .count(dto.getCount())
+                .totalPrice(totalPrice)
+                .orderStatus(OrderStatus.PENDING) // 기본값 설정
+                .updatedAt(LocalDateTime.now())
+                .build();
 
         Order savedOrder = orderRepository.save(order);
 

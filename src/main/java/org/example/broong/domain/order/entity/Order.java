@@ -1,9 +1,7 @@
 package org.example.broong.domain.order.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.store.entity.Store;
@@ -17,9 +15,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Setter
 @Table(name = "orders")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     // 오더 ID
@@ -59,6 +56,7 @@ public class Order {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Builder
     public Order(User user, Store store, Menu menu, int count, int totalPrice, OrderStatus orderStatus, LocalDateTime updatedAt) {
         this.user = user;
         this.store = store;
