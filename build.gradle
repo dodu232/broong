@@ -28,6 +28,7 @@ dependencies {
 
     // Database
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // JPA + Hibernate 포함

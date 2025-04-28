@@ -1,6 +1,7 @@
 package org.example.broong.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
@@ -9,6 +10,7 @@ import org.example.broong.domain.order.repository.OrderRepository;
 import org.example.broong.domain.orderItem.entity.OrderItem;
 import org.example.broong.domain.orderItem.service.OrderItemService;
 import org.example.broong.domain.store.entity.Store;
+import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
@@ -25,22 +27,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderItemService orderItemService;
     private final OrderRepository orderRepository;
     private final UserService userService;
+    private final StoreRepository storeRepository;
 
     // 사용자 주문 생성
     @Transactional
-    public OrderResponseDto createOrder(Long userId) {
+    public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
 
         User user = userService.getById(userId);
-        List<OrderItem> orderItems = orderItemService.getOrderItem(userId);
-        if (orderItems.isEmpty()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오더 아이템이 비어있습니다.");
+
+        Store store = storeRepository.findById(dto.getStoreId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.INVALID_PARAMETER, "요청한 가게와 오더아이템의 가게와 다릅니다."));
+
+
+
+        Store store = orderItems.get(0).getMenuOption().getMenu().getStore();
+        if (!store.getId().equals(dto.getStoreId())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "요청한 가게와 장바구니 가게가 다릅니다.");
         }
 
         // 가게 영업시간에만 주문 가능
-        Store store = orderItems.get(0).getMenuOption().getMenu().getStore();
         LocalTime now = LocalTime.now();
         if (now.isBefore(store.getOpeningTime()) || now.isAfter(store.getClosingTime())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "영업시간이 아닙니다.");

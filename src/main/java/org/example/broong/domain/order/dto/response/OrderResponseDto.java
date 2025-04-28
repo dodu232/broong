@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 public class OrderResponseDto {
     private final Long id;
     private final Long storeId;
+    private final Long menuId;
+    private final int count;
     private final int totalPrice;
     private final LocalDateTime updatedAt;
 

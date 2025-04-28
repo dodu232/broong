@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.user.entity.User;
@@ -36,6 +37,15 @@ public class Order {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
+    // 메뉴 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
+
+    // 메뉴 개수
+    @Column(nullable = false)
+    private int count;
+
     // 총 가격
     @Column(nullable = false)
     private int totalPrice;
@@ -49,9 +59,11 @@ public class Order {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Order(User user, Store store, int totalPrice, OrderStatus orderStatus, LocalDateTime updatedAt) {
+    public Order(User user, Store store, Menu menu, int count, int totalPrice, OrderStatus orderStatus, LocalDateTime updatedAt) {
         this.user = user;
         this.store = store;
+        this.menu = menu;
+        this.count = count;
         this.totalPrice = totalPrice;
         this.orderStatus = OrderStatus.PENDING; // 기본값 설정
         this.updatedAt = updatedAt;
