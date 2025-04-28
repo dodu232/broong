@@ -1,7 +1,6 @@
 package org.example.broong.domain.menu.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.entity.Menu;
