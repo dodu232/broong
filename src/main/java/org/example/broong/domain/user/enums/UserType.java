@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 public enum UserType {
     USER, OWNER;
 
-
     public static UserType of(String type){
         return Arrays.stream(UserType.values())
                 .filter(t -> t.name().equalsIgnoreCase(type))

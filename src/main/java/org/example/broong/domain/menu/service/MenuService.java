@@ -1,7 +1,6 @@
 package org.example.broong.domain.menu.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.menu.dto.request.MenuRequestDto;
 import org.example.broong.domain.menu.dto.response.MenuResponseDto;
 import org.example.broong.domain.menu.entity.Menu;
@@ -12,6 +11,7 @@ import org.example.broong.domain.store.service.StoreService;
 import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
+import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,13 +74,13 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long storeId, Long menuId, AuthUser authUser) {
+    public void deleteMenu(Long storeId, Long menuId, CustomUserDetails userDetails) {
 
-        if (authUser.getUserType() != UserType.OWNER) {
+        if (userDetails.getUserType() != UserType.OWNER) {
             throw new ApiException(HttpStatus.FORBIDDEN, INVALID_PARAMETER, "사장님만 메뉴를 삭제할 수 있습니다.");
         }
 
-        storeService.getStoreOwnedByUser(storeId, authUser.getId());
+        storeService.getStoreOwnedByUser(storeId, userDetails.getUserId());
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "메뉴를 찾을 수 없습니다."));
