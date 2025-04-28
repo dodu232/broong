@@ -100,10 +100,11 @@ public class OrderService {
 
     // 오너 주문 상태 변경
     @Transactional
-    public OrderStatusResponseDto changeOrderStatus(Long ownerId, Long orderId, OrderStatus newStatus ) {
-        Order order = getOrderById(orderId);
+    public OrderStatusResponseDto changeOrderStatus(UserType userType, Long orderId, OrderStatus newStatus ) {
 
-        validateOwnerOrder(order, ownerId);
+        validateOwnerOrder(userType);
+
+        Order order = getOrderById(orderId);
 
         if (!OrderStatus.PENDING.equals(order.getOrderStatus())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,"변경할 수 없는 주문입니다.");
@@ -118,13 +119,13 @@ public class OrderService {
     }
 
     private void validateUserOrder(Order order, Long userId) {
-        if (!ObjectUtils.nullSafeEquals(userId, order.getStore().getId())) {
+        if (!ObjectUtils.nullSafeEquals(userId, order.getUser().getId())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "주문한 유저가 아닙니다.");
         }
     }
 
-    private void validateOwnerOrder(Order order, Long ownerId){
-        if (!ObjectUtils.nullSafeEquals(ownerId, order.getStore().getId())) {
+    private void validateOwnerOrder(UserType userType) {
+        if (!UserType.OWNER.equals(userType)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "오너만 주문 상태를 변경할 수 있습니다.");
         }
     }

@@ -7,9 +7,11 @@ import org.example.broong.domain.menu.enums.MenuState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "menus")
@@ -35,6 +37,7 @@ public class Menu {
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuOptions> menuOptions = new ArrayList<>();
+
 
     public void update(String name, int price, MenuState state) {
         this.name = name;
