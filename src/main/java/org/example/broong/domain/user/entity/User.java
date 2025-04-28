@@ -8,10 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.common.BaseEntity;
 import org.example.broong.domain.user.enums.UserType;
 
@@ -47,27 +47,8 @@ public class User extends BaseEntity {
         this.userType = userType;
     }
 
-    public void changePassword(String password){
-        this.password = password;
-    }
-
-    private User(Long id, String email, UserType userType) {
-        this.id = id;
-        this.email = email;
-        this.userType = userType;
-    }
-
-    public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserType());
-    }
-
     public void addPoint(int point){
         this.point = this.point + point;
     }
-
-
-
-
-
 
 }
