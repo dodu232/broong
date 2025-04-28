@@ -7,7 +7,7 @@ public class StoreResponseDto {
 
     @Getter
     @AllArgsConstructor
-    public static class Get{
+    public static class Get {
         private long id;
         private String name;
         private String openingTime;

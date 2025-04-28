@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'idea'
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -22,6 +23,10 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+jacoco{
+    toolVersion = "0.8.7"
 }
 
 dependencies {
@@ -52,7 +57,9 @@ dependencies {
 
 
     // jwt
-    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+
+//    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
@@ -75,6 +82,35 @@ compileJava {
     options.annotationProcessorGeneratedSourcesDirectory = file('src/main/generated')
 }
 
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    dependsOn tasks.test
+    reports {
+        html.required.set(true)
+        csv.required.set(true)
+        xml.required.set(false)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    // 전체 커버리지 30% 미만이면 실패
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.30.toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn tasks.jacocoTestCoverageVerification
+}
+
 sourceSets {
     main {
         java {
@@ -85,13 +121,7 @@ sourceSets {
 
 idea {
     module {
-        sourceDirs += file('src/main/generated')
-        generatedSourceDirs += file('src/main/generated')
+        sourceDirs += file("$buildDir/generated/sources/annotationProcessor/java/main")
+        generatedSourceDirs += file("$buildDir/generated/sources/annotationProcessor/java/main")
     }
-}
-
-
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

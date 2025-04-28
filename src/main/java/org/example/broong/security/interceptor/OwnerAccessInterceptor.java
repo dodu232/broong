@@ -9,11 +9,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class OwnerAccessInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         log.info("UserType = {}", request.getAttribute("userType"));
         UserType userType = UserType.of((String) request.getAttribute("userType"));
-        if(!UserType.OWNER.equals(userType)){
+        if (!UserType.OWNER.equals(userType)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("text/plain;charset=UTF-8");

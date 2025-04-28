@@ -5,6 +5,7 @@ import org.example.broong.domain.menu.entity.Menu;
 import org.example.broong.domain.menu.entity.MenuOptions;
 import org.example.broong.domain.menu.repository.MenuOptionsRepository;
 import org.example.broong.domain.menu.repository.MenuRepository;
+import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
@@ -42,7 +43,6 @@ public class OrderService {
     public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
 
         User user = userService.getById(userId);
-
 
         // 가게 검증
         Store store = storeRepository.findById(dto.getStoreId())
@@ -151,5 +151,10 @@ public class OrderService {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE,
                         "주문을 찾을 수 없습니다."));
+    }
+
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 주문입니다."));
     }
 }

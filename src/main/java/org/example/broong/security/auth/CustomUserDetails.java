@@ -1,11 +1,12 @@
 package org.example.broong.security.auth;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
 import lombok.Getter;
 import org.example.broong.domain.user.enums.UserType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -17,8 +18,8 @@ public class CustomUserDetails implements UserDetails {
     private final LocalDateTime deletedAt;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long userId, String email, String password,UserType userType, LocalDateTime deletedAt,
-            Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Long userId, String email, String password, UserType userType, LocalDateTime deletedAt,
+                             Collection<? extends GrantedAuthority> authorities) {
         this.userId = userId;
         this.userName = email;
         this.password = password;

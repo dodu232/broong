@@ -2,14 +2,10 @@ package org.example.broong.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.security.auth.CustomUserDetailsService;
-import org.example.broong.security.auth.CustomUsernamePasswordAuthenticationFilter;
+import org.example.broong.domain.user.repository.UserRepository;
+import org.example.broong.security.auth.*;
 import org.example.broong.security.jwt.JwtFilter;
 import org.example.broong.security.jwt.JwtService;
-import org.example.broong.security.auth.LoginFailureHandler;
-import org.example.broong.security.auth.LoginSuccessHandler;
-import org.example.broong.security.auth.RedisDao;
-import org.example.broong.domain.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,7 +40,7 @@ public class JwtConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/login").permitAll()
+                        .requestMatchers("/auth/signup", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter(redisDao), UsernamePasswordAuthenticationFilter.class)

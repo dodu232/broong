@@ -2,8 +2,8 @@ package org.example.broong.domain.menu.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.menu.enums.MenuState;
+import org.example.broong.domain.store.entity.Store;
 
 import java.util.ArrayList;
 import java.util.List;
