@@ -1,17 +1,18 @@
 package org.example.broong.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.menu.entity.Menu;
+import org.example.broong.domain.menu.repository.MenuRepository;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
 import org.example.broong.domain.order.dto.response.OrderStatusResponseDto;
 import org.example.broong.domain.order.entity.Order;
 import org.example.broong.domain.order.repository.OrderRepository;
-import org.example.broong.domain.orderItem.entity.OrderItem;
-import org.example.broong.domain.orderItem.service.OrderItemService;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.user.entity.User;
+import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
 
     // 사용자 주문 생성
     @Transactional
@@ -37,15 +38,14 @@ public class OrderService {
 
         User user = userService.getById(userId);
 
+        // 가게 검증
         Store store = storeRepository.findById(dto.getStoreId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.INVALID_PARAMETER, "요청한 가게와 오더아이템의 가게와 다릅니다."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.INVALID_PARAMETER, "가게를 찾을 수 없습니다."));
 
+        // 메뉴 검증
+        Menu menu = menuRepository.findById(dto.getMenuId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.INVALID_PARAMETER, "메뉴를 찾을 수 없습니다."));
 
-
-        Store store = orderItems.get(0).getMenuOption().getMenu().getStore();
-        if (!store.getId().equals(dto.getStoreId())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "요청한 가게와 장바구니 가게가 다릅니다.");
-        }
 
         // 가게 영업시간에만 주문 가능
         LocalTime now = LocalTime.now();
@@ -53,10 +53,8 @@ public class OrderService {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "영업시간이 아닙니다.");
         }
 
-        // 장바구니에 담긴 메뉴옵션의 가격을 가져와서 총주문 금액 확인
-        int totalPrice = orderItems.stream()
-                .mapToInt(orderItem -> orderItem.getMenuOption().getPrice() * orderItem.getCount())
-                .sum();
+        // 총 가격
+        int totalPrice = menu.getPrice() * dto.getCount();
 
         // 가게에서 설정한 최소 주문 금액을 만족해야 주문이 가능
         if (totalPrice < store.getMinOrderPrice()) {
@@ -66,19 +64,22 @@ public class OrderService {
         // 주문 설정
         Order order = new Order();
         order.setStore(store);
-        order.setUser(user);
+        order.setMenu(menu);
+        order.setCount(dto.getCount());
         order.setTotalPrice(totalPrice);
         order.setOrderStatus(OrderStatus.PENDING);  // 주문 생성 시 기본 상태
+        order.setUser(user);
 
         Order savedOrder = orderRepository.save(order);
 
         return new OrderResponseDto(
                 savedOrder.getId(),
                 store.getId(),
-                totalPrice,
+                savedOrder.getMenu().getId(),
+                savedOrder.getCount(),
+                savedOrder.getTotalPrice(),
                 savedOrder.getUpdatedAt()
         );
-
     }
 
     // 사용자 주문 취소

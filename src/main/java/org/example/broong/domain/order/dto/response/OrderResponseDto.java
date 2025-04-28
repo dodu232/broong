@@ -16,5 +16,4 @@ public class OrderResponseDto {
     private final int totalPrice;
     private final LocalDateTime updatedAt;
 
-
 }

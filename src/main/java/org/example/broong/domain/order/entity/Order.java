@@ -16,8 +16,8 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Entity
+@Setter
 @Table(name = "orders")
 @NoArgsConstructor
 public class Order {
