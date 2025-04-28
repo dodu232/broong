@@ -1,6 +1,7 @@
 package org.example.broong.domain.user.service;
 
 import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
+import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class UserService {
 
     public User getById(long userId){
         return userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, INVALID_PARAMETER, "DB에 존재하지 않는 유저입니다."));
+            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "DB에 존재하지 않는 유저입니다."));
     }
 
     @Transactional

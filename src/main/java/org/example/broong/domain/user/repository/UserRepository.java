@@ -13,8 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     boolean existsByEmail(String email);
 
-
-
     Optional<User> findByEmail(String email);
 
     // ID로 사용자 검색, 없으면 예외 발생

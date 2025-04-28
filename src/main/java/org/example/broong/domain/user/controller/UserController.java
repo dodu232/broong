@@ -27,7 +27,7 @@ public class UserController {
         Long userId = customUserDetails.getUserId();
         userService.deleteUser(httpServletRequest, userId, requestDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 되었습니다.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
     }
 
 

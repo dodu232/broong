@@ -75,9 +75,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String findRefreshToken = redisDao.getRefreshToken(email);
 
-        log.info("redis {}",findRefreshToken);
-        log.info("refreshToken {}", refreshToken);
-
         // redis에 refresh token이 존재하는지 여부와 일치여부를 확인하고 맞으면 access token과 refresh token 재발급
         if(findRefreshToken != null && findRefreshToken.equals(refreshToken)){
 
@@ -144,8 +141,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String email = jwtService.extractEmail(claims);
 
             String blackList = redisDao.getBlackList(accessToken);
-
-            log.info("access {} blackList {}", accessToken,blackList);
 
             if(blackList != null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

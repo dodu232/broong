@@ -52,14 +52,12 @@ public class AuthService {
         newUser.addPoint(100);
 
         userRepository.save(newUser);
-        log.info("{}", userRepository.existsByEmail(requestDto.getEmail()));
     }
 
     public void logout(HttpServletRequest request) {
         String accessToken = jwtService.substringToken(request, "access").orElseThrow(
                 () -> new ApiException(HttpStatus.BAD_REQUEST, NO_RESOURCE, "액세스 토큰이 존재하지 않습니다.")
         );
-
 
         Claims claims = jwtService.extractClaims(accessToken, "access");
 
@@ -80,14 +78,7 @@ public class AuthService {
             throw new ApiException(HttpStatus.BAD_REQUEST, INVALID_PARAMETER, "이미 만료된 액세스 토큰입니다.");
         }
 
-
         redisDao.setBlackList(accessToken, "logout", expireTime);
-
-        log.info("블랙리스트 {}",redisDao.getBlackList(accessToken));
-
-
-
-        log.info("리프레시 삭제 여부 {}",redisDao.hasKey(email));
 
     }
 

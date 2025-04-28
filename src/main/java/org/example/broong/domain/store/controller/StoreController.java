@@ -3,7 +3,6 @@ package org.example.broong.domain.store.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.dto.StoreRequestDto;
 import org.example.broong.domain.store.dto.StoreResponseDto;

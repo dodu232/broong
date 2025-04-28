@@ -20,7 +20,6 @@ public class OwnerAccessInterceptor implements HandlerInterceptor {
             response.getWriter().write("Owner 권한이 필요합니다.");
             return false;
         }
-        log.info("Interceptor - Owner API Access: Timestamp={}, URL={}", System.currentTimeMillis(), request.getRequestURI());
         return true;
     }
 

@@ -39,10 +39,6 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().write("로그인 성공.");
 
-        log.info("redis 조회 {}", redisDao.getRefreshToken(customUserDetails.getUsername()));
-        log.info("로그인에 성공하였습니다. 이메일 : {}", customUserDetails.getUsername());
-        log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);
-        log.info("발급된 AccessToken 만료 기간 : {}", accessTokenExpiration);
     }
 
     private CustomUserDetails extractCustomUserDetails(Authentication authentication) {

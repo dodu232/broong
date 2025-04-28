@@ -27,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         User findUser = userRepository.findByEmail(username).orElseThrow(() ->
                 new ApiException(HttpStatus.NOT_FOUND, NO_RESOURCE, "존재하지 않는 유저 입니다."));
 
-
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+findUser.getUserType().name()));
 
         return new CustomUserDetails(findUser.getId(), findUser.getEmail(), findUser.getPassword(), findUser.getUserType(), findUser.getDeletedAt(), authorities);

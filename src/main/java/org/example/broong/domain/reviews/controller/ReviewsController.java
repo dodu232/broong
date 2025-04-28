@@ -2,7 +2,6 @@ package org.example.broong.domain.reviews.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.broong.domain.common.AuthUser;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
