@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
-import org.example.broong.domain.auth.dto.response.AuthResponseDto;
 import org.example.broong.domain.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

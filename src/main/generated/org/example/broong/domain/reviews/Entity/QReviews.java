@@ -34,7 +34,7 @@ public class QReviews extends EntityPathBase<Reviews> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final org.example.broong.domain.testOrder.QOrders orderId;
+    public final org.example.broong.domain.order.entity.QOrder orderId;
 
     public final NumberPath<Integer> rating = createNumber("rating", Integer.class);
 
@@ -63,7 +63,7 @@ public class QReviews extends EntityPathBase<Reviews> {
 
     public QReviews(Class<? extends Reviews> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.orderId = inits.isInitialized("orderId") ? new org.example.broong.domain.testOrder.QOrders(forProperty("orderId"), inits.get("orderId")) : null;
+        this.orderId = inits.isInitialized("orderId") ? new org.example.broong.domain.order.entity.QOrder(forProperty("orderId"), inits.get("orderId")) : null;
         this.storeId = inits.isInitialized("storeId") ? new org.example.broong.domain.store.entity.QStore(forProperty("storeId"), inits.get("storeId")) : null;
         this.userId = inits.isInitialized("userId") ? new org.example.broong.domain.user.entity.QUser(forProperty("userId")) : null;
     }
