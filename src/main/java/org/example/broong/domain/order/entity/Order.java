@@ -49,7 +49,7 @@ public class Order {
 
     // 주문 상태
     @Column(nullable = false)
-    @Enumerated (EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     // 주문 요청 시각
@@ -68,7 +68,7 @@ public class Order {
     }
 
     public void updateOrderStatus(OrderStatus orderStatus) {
-        if(this.orderStatus == orderStatus.CANCELED) {
+        if (this.orderStatus == orderStatus.CANCELED) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER,
                     "취소된 주문은 상태 변경 할 수 없습니다.");
         }

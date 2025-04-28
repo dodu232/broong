@@ -1,19 +1,11 @@
 package org.example.broong.domain.auth.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Optional;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
-import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.repository.UserRepository;
+import org.example.broong.global.exception.ApiException;
 import org.example.broong.security.auth.RedisDao;
 import org.example.broong.security.jwt.JwtService;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Date;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -48,12 +47,12 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("존재하는 이메일로 회원가입 시도 시 예외 발생")
-    void saveUser_whenUserExists(){
+    void saveUser_whenUserExists() {
 
         // given
         String email = "exisiting@example.com";
 
-        AuthRequestDto.Singup requestDto = new AuthRequestDto.Singup("user" , email , "Password12","USER");
+        AuthRequestDto.Singup requestDto = new AuthRequestDto.Singup("user", email, "Password12", "USER");
 
         given(userRepository.existsByEmail(email)).willReturn(true);
 
@@ -69,12 +68,12 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 이메일로 회원가입 시도 시 성공")
-    void saveUser_successSignup(){
+    void saveUser_successSignup() {
 
         // given
         String email = "test1@example.com";
 
-        AuthRequestDto.Singup requestDto = new AuthRequestDto.Singup("user" , email , "Password12","USER");
+        AuthRequestDto.Singup requestDto = new AuthRequestDto.Singup("user", email, "Password12", "USER");
 
         given(userRepository.existsByEmail(email)).willReturn(false);
 
@@ -85,7 +84,7 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("로그아웃 성공")
-    void successLogout(){
+    void successLogout() {
 
         // given
         String accesstoken = "testAccessToken";
@@ -93,10 +92,10 @@ public class AuthServiceTest {
         Claims claims = mock(Claims.class);
 
         given(jwtService.substringToken(request, "access")).willReturn(Optional.of(accesstoken));
-        given(jwtService.extractClaims(accesstoken,"access")).willReturn(claims);
+        given(jwtService.extractClaims(accesstoken, "access")).willReturn(claims);
         given(jwtService.extractEmail(claims)).willReturn(email);
         given(redisDao.hasKey(email)).willReturn(true);
-        given(claims.getExpiration()).willReturn(new Date(System.currentTimeMillis() + 60000 ));
+        given(claims.getExpiration()).willReturn(new Date(System.currentTimeMillis() + 60000));
 
         // when & then
         assertDoesNotThrow(() -> autoService.logout(request));
@@ -105,7 +104,7 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("엑세스 토큰이 없을 때")
-    void notfoundAccessToken(){
+    void notfoundAccessToken() {
 
         // given
         given(jwtService.substringToken(request, "access")).willReturn(Optional.empty());
@@ -122,7 +121,7 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("리프레시 토큰이 없을 때")
-    void notfoundRefreshToken(){
+    void notfoundRefreshToken() {
 
         // given
         String accesstoken = "testAccessToken";
@@ -130,7 +129,7 @@ public class AuthServiceTest {
         Claims claims = mock(Claims.class);
 
         given(jwtService.substringToken(request, "access")).willReturn(Optional.of(accesstoken));
-        given(jwtService.extractClaims(accesstoken,"access")).willReturn(claims);
+        given(jwtService.extractClaims(accesstoken, "access")).willReturn(claims);
         given(jwtService.extractEmail(claims)).willReturn(email);
         given(redisDao.hasKey(email)).willReturn(false);
 
@@ -146,7 +145,7 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("액세스 토큰이 만료 됐을 때")
-    void accessTokenAlreadyExpired(){
+    void accessTokenAlreadyExpired() {
 
         // given
         String accesstoken = "testAccessToken";
@@ -154,7 +153,7 @@ public class AuthServiceTest {
         Claims claims = mock(Claims.class);
 
         given(jwtService.substringToken(request, "access")).willReturn(Optional.of(accesstoken));
-        given(jwtService.extractClaims(accesstoken,"access")).willReturn(claims);
+        given(jwtService.extractClaims(accesstoken, "access")).willReturn(claims);
         given(jwtService.extractEmail(claims)).willReturn(email);
         given(redisDao.hasKey(email)).willReturn(true);
         given(claims.getExpiration()).willReturn(new Date(System.currentTimeMillis()));

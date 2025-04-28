@@ -21,15 +21,14 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails,@RequestBody
-            DeleteUserRequestDto requestDto, HttpServletRequest httpServletRequest){
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody
+    DeleteUserRequestDto requestDto, HttpServletRequest httpServletRequest) {
 
         Long userId = customUserDetails.getUserId();
         userService.deleteUser(httpServletRequest, userId, requestDto);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
     }
-
 
 
 }

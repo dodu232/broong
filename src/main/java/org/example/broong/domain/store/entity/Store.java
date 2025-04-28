@@ -1,17 +1,6 @@
 package org.example.broong.domain.store.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import java.time.LocalTime;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +10,8 @@ import org.example.broong.domain.store.Category;
 import org.example.broong.domain.user.entity.User;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -61,12 +52,12 @@ public class Store extends BaseEntity {
     }
 
     public void updateStore(String name, Category category, LocalTime openingTime, LocalTime closingTime,
-        Integer minOrderPrice){
-        this.name =  name == null || name.isBlank() ? this.name : name;
+                            Integer minOrderPrice) {
+        this.name = name == null || name.isBlank() ? this.name : name;
         this.category = category == null ? this.category : category;
         this.openingTime = openingTime == null ? this.openingTime : openingTime;
         this.closingTime = closingTime == null ? this.closingTime : closingTime;
-        this.minOrderPrice =  minOrderPrice == null ? this.minOrderPrice : minOrderPrice;
+        this.minOrderPrice = minOrderPrice == null ? this.minOrderPrice : minOrderPrice;
     }
 
     public boolean IsOpen() {

@@ -21,7 +21,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody OrderCreateRequestDto dto) {
-        return ResponseEntity.ok(orderService.createOrder(customUserDetails.getUserId(),dto));
+        return ResponseEntity.ok(orderService.createOrder(customUserDetails.getUserId(), dto));
     }
 
 

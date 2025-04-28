@@ -13,7 +13,7 @@ public class AuthRequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public  static class Singup {
+    public static class Singup {
 
         @NotBlank
         private String name;
@@ -23,7 +23,7 @@ public class AuthRequestDto {
         private String email;
 
         @NotBlank
-        @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9]{8,50}$" , message = "새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.")
+        @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9]{8,50}$", message = "새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.")
         private String password;
 
         @NotBlank

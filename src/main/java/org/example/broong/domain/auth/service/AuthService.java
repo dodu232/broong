@@ -1,24 +1,25 @@
 package org.example.broong.domain.auth.service;
 
-import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
-import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
-
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.broong.security.jwt.JwtService;
-import org.example.broong.security.auth.RedisDao;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
-import org.example.broong.global.exception.ApiException;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.enums.UserType;
 import org.example.broong.domain.user.repository.UserRepository;
+import org.example.broong.global.exception.ApiException;
+import org.example.broong.security.auth.RedisDao;
+import org.example.broong.security.jwt.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+
+import static org.example.broong.global.exception.ErrorType.INVALID_PARAMETER;
+import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
 
 @Slf4j
 @Service
@@ -33,7 +34,7 @@ public class AuthService {
     @Transactional
     public void signup(AuthRequestDto.Singup requestDto) {
 
-        if(userRepository.existsByEmail(requestDto.getEmail())){
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new ApiException(HttpStatus.CONFLICT, INVALID_PARAMETER, "이미 존재하는 이메일 입니다.");
         }
 

@@ -1,15 +1,15 @@
 package org.example.broong.domain.user.repository;
 
-import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.global.exception.ApiException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 
-public interface UserRepository extends JpaRepository<User, Long>{
+import java.util.Optional;
+
+import static org.example.broong.global.exception.ErrorType.NO_RESOURCE;
+
+public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 

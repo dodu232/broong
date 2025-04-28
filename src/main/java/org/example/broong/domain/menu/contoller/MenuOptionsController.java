@@ -8,13 +8,7 @@ import org.example.broong.domain.menu.service.MenuOptionService;
 import org.example.broong.security.auth.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/stores/{storeId}/menus")
@@ -25,38 +19,38 @@ public class MenuOptionsController {
 
     @PostMapping("/{menuId}/options")
     public ResponseEntity<MenuOptionsResponseDto> addMenuOption(
-        @PathVariable Long storeId,
-        @PathVariable Long menuId,
-        @Valid @RequestBody MenuOptionsRequestDto dto,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @Valid @RequestBody MenuOptionsRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MenuOptionsResponseDto response = menuOptionService.addMenuOption(storeId, menuId, dto,
-            userDetails.getUserId(), userDetails.getUserType());
+                userDetails.getUserId(), userDetails.getUserType());
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{menuId}/options/{optionId}")
     public ResponseEntity<MenuOptionsResponseDto> updateMenuOption(
-        @PathVariable Long storeId,
-        @PathVariable Long menuId,
-        @PathVariable Long optionId,
-        @Valid @RequestBody MenuOptionsRequestDto dto,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @PathVariable Long optionId,
+            @Valid @RequestBody MenuOptionsRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MenuOptionsResponseDto response = menuOptionService.updateMenuOption(storeId, menuId,
-            optionId, dto, userDetails.getUserId(), userDetails.getUserType());
+                optionId, dto, userDetails.getUserId(), userDetails.getUserType());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{menuId}/options/{optionId}")
     public ResponseEntity<Void> deleteMenuOption(
-        @PathVariable Long storeId,
-        @PathVariable Long menuId,
-        @PathVariable Long optionId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @PathVariable Long optionId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         menuOptionService.deleteMenuOption(storeId, menuId, optionId, userDetails.getUserId(),
-            userDetails.getUserType());
+                userDetails.getUserType());
         return ResponseEntity.ok().build();
     }
 }

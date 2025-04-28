@@ -1,6 +1,8 @@
 package org.example.broong.domain.reviews.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.broong.domain.order.entity.Order;
+import org.example.broong.domain.order.service.OrderService;
 import org.example.broong.domain.reviews.Entity.Reviews;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.FindReviewByStoreResponseDto;
@@ -9,8 +11,6 @@ import org.example.broong.domain.reviews.dto.UpdateReviewResponseDto;
 import org.example.broong.domain.reviews.repository.ReviewsRepository;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.service.StoreService;
-import org.example.broong.domain.testOrder.Orders;
-import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.service.UserService;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
@@ -28,14 +28,13 @@ public class ReviewsServiceImpl implements ReviewsService {
     private final ReviewsRepository reviewsRepository;
     private final UserService userService;
     private final StoreService storeService;
-    private final OrdersRepository ordersRepository;
+    private final OrderService orderService;
 
     // 리뷰 생성 메서드
     @Override
     public void create(Long userId, Long orderId, CreateReviewRequestDto requestDto) {
-        Orders order = ordersRepository.findById(orderId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 주문입니다."));
-        if (order.getUser() == null || userId != order.getUser().getId()) {
+        Order order = orderService.getOrder(orderId);
+        if (userId != order.getUser().getId()) {
             throw new ApiException(HttpStatus.FORBIDDEN, ErrorType.INVALID_PARAMETER, "본인의 주문에만 리뷰를 남길 수 있습니다.");
         }
         if (reviewsRepository.existsByOrderId_Id(orderId)) {

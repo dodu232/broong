@@ -1,5 +1,9 @@
 package org.example.broong.domain.review.service;
 
+import org.example.broong.domain.menu.entity.Menu;
+import org.example.broong.domain.order.entity.Order;
+import org.example.broong.domain.order.repository.OrderRepository;
+import org.example.broong.domain.order.service.OrderService;
 import org.example.broong.domain.reviews.Entity.Reviews;
 import org.example.broong.domain.reviews.dto.CreateReviewRequestDto;
 import org.example.broong.domain.reviews.dto.UpdateReviewRequestDto;
@@ -9,12 +13,9 @@ import org.example.broong.domain.store.Category;
 import org.example.broong.domain.store.entity.Store;
 import org.example.broong.domain.store.repository.StoreRepository;
 import org.example.broong.domain.store.service.StoreService;
-import org.example.broong.domain.testOrder.Orders;
-import org.example.broong.domain.testOrder.OrdersRepository;
 import org.example.broong.domain.user.entity.User;
 import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.domain.user.service.UserService;
-import org.example.broong.domain.user.service.UserServiceTest;
 import org.example.broong.global.exception.ApiException;
 import org.example.broong.global.exception.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -23,17 +24,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.sql.Ref;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import static org.example.broong.domain.menu.enums.MenuState.AVAILABLE;
+import static org.example.broong.domain.order.enums.OrderStatus.BEFORE_ORDER;
 import static org.example.broong.domain.user.enums.UserType.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,7 +61,10 @@ public class ReviewsServiceTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private OrdersRepository ordersRepository;
+    private OrderService orderService;
+
+    @Mock
+    private OrderRepository orderRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -80,11 +84,23 @@ public class ReviewsServiceTest {
             10000,
             testUser
     );
-    private final Orders testOrder = new Orders(
+    private final Menu testMenu = new Menu(
+            1L,
+            testStore,
+            "짜장면",
+            6000,
+            AVAILABLE,
+            null
+    );
+
+    private final Order testOrder = new Order(
             testUser,
             testStore,
+            testMenu,
+            2,
             10000,
-            "대기"
+            BEFORE_ORDER,
+            LocalDateTime.now()
     );
     private final CreateReviewRequestDto testCreateReviewRequestDto = new CreateReviewRequestDto(
             1,
@@ -107,12 +123,13 @@ public class ReviewsServiceTest {
     @DisplayName("리뷰를 만들면 정상적으로 생성된다.")
     public void createSuccess() {
         // given
-        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
+        ReflectionTestUtils.setField(testOrder, "id", 1L);
+        given(orderService.getOrder(testOrder.getId())).willReturn(testOrder);
         ReflectionTestUtils.setField(testUser, "id", 1L);
-        Long testOrderId = 1L;
-        Long testUserId = 1L;
+
         // when
-        reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto);
+        reviewsService.create(testUser.getId(), testOrder.getId(), testCreateReviewRequestDto);
+
         // then
         verify(reviewsRepository, times(1)).save(any());
     }
@@ -122,8 +139,10 @@ public class ReviewsServiceTest {
     @DisplayName("본인의 주문에만 리뷰를 생성할 수 있다.")
     public void createFail_1() {
         // given
-        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
+        ReflectionTestUtils.setField(testOrder, "id", 1L);
+        given(orderService.getOrder(testOrder.getId())).willReturn(testOrder);
         ReflectionTestUtils.setField(testUser, "id", 2L);
+
         Long testOrderId = 1L;
         Long testUserId = 1L;
         // when
@@ -137,9 +156,14 @@ public class ReviewsServiceTest {
     @DisplayName("주문이 없을 경우 API 예외를 던져준다.")
     public void createFail_2() {
         // given
+        ReflectionTestUtils.setField(testOrder, "id", 1L);
+        ReflectionTestUtils.setField(testUser, "id", 1L);
         Long testUserId = 1L;
-        Long testOrderId = 1L;
+        Long testOrderId = 2L;
         // when
+        doThrow(new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 주문입니다."))
+                .when(orderService).getOrder(testOrderId);
+
         ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto));
         // then
         assertEquals("존재하지 않는 주문입니다.", exception.getMessage());
@@ -150,11 +174,15 @@ public class ReviewsServiceTest {
     @DisplayName("주문에 이미 리뷰가 있을 경우 API 예외를 던져준다.")
     public void createFail_3() {
         // given
-        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
+        ReflectionTestUtils.setField(testOrder, "id", 1L);
+        given(orderService.getOrder(testOrder.getId())).willReturn(testOrder);
         ReflectionTestUtils.setField(testUser, "id", 1L);
+
         Long testUserId = 1L;
         Long testOrderId = 1L;
+
         given(reviewsRepository.existsByOrderId_Id(testOrderId)).willReturn(true);
+
         // when
         ApiException exception = assertThrows(ApiException.class, () -> reviewsService.create(testUserId, testOrderId, testCreateReviewRequestDto));
         // then
@@ -166,11 +194,12 @@ public class ReviewsServiceTest {
     @DisplayName("리뷰를 작성할 주문이 폐업한 가게의 주문인 경우 API 예외를 던져준다.")
     public void createFail_4() {
         //given
+        ReflectionTestUtils.setField(testOrder, "id", 1L);
+        given(orderService.getOrder(testOrder.getId())).willReturn(testOrder);
+
         ReflectionTestUtils.setField(testUser, "id", 1L);
         Long testUserId = 1L;
         Long testOrderId = 1L;
-
-        given(ordersRepository.findById(1L)).willReturn(Optional.of(testOrder));
 
         ReflectionTestUtils.setField(testStore, "deletedAt", LocalDateTime.now());
 

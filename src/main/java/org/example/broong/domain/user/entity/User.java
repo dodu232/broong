@@ -1,14 +1,6 @@
 package org.example.broong.domain.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +17,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false ,unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -40,14 +32,14 @@ public class User extends BaseEntity {
     private UserType userType;
 
     @Builder
-    public User(String email, String password, String name, UserType userType){
+    public User(String email, String password, String name, UserType userType) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.userType = userType;
     }
 
-    public void addPoint(int point){
+    public void addPoint(int point) {
         this.point = this.point + point;
     }
 

@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.broong.domain.common.BaseEntity;
+import org.example.broong.domain.order.entity.Order;
 import org.example.broong.domain.store.entity.Store;
-import org.example.broong.domain.testOrder.Orders;
 import org.example.broong.domain.user.entity.User;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -34,7 +34,7 @@ public class Reviews extends BaseEntity {
 
     @OneToOne
     @JoinColumn(nullable = false, name = "order_id")
-    private Orders orderId;
+    private Order orderId;
 
     @NotNull
     @Column(nullable = false)
@@ -44,7 +44,7 @@ public class Reviews extends BaseEntity {
     @Column(nullable = false)
     private String contents;
 
-    public Reviews(User users, Orders orders, Store store, int rating, String contents) {
+    public Reviews(User users, Order orders, Store store, int rating, String contents) {
         this.userId = users;
         this.orderId = orders;
         this.storeId = store;

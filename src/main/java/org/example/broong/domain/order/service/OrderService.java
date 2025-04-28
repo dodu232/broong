@@ -143,4 +143,9 @@ public class OrderService {
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE,
                         "주문을 찾을 수 없습니다."));
     }
+
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, "존재하지 않는 주문입니다."));
+    }
 }
