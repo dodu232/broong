@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.broong.security.auth.CustomUserDetails;
 import org.example.broong.security.jwt.JwtService;
 import org.example.broong.security.auth.RedisDao;
 import org.example.broong.domain.auth.dto.request.AuthRequestDto;
