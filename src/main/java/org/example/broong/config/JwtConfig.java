@@ -44,7 +44,7 @@ public class JwtConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/login").permitAll()
+                        .requestMatchers("/auth/signup", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter(redisDao), UsernamePasswordAuthenticationFilter.class)

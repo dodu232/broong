@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody AuthRequestDto.Singup requestDto) {
 
         authService.signup(requestDto);
