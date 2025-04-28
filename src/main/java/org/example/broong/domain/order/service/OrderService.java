@@ -2,8 +2,9 @@ package org.example.broong.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.broong.domain.menu.entity.Menu;
+import org.example.broong.domain.menu.entity.MenuOptions;
+import org.example.broong.domain.menu.repository.MenuOptionsRepository;
 import org.example.broong.domain.menu.repository.MenuRepository;
-import org.example.broong.domain.menu.service.MenuService;
 import org.example.broong.domain.order.dto.request.OrderCreateRequestDto;
 import org.example.broong.domain.order.enums.OrderStatus;
 import org.example.broong.domain.order.dto.response.OrderResponseDto;
@@ -24,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +35,14 @@ public class OrderService {
     private final UserService userService;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
+    private final MenuOptionsRepository menuOptionsRepository;
 
     // 사용자 주문 생성
     @Transactional
     public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
 
         User user = userService.getById(userId);
+
 
         // 가게 검증
         Store store = storeRepository.findById(dto.getStoreId())
@@ -48,15 +52,20 @@ public class OrderService {
         Menu menu = menuRepository.findById(dto.getMenuId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorType.INVALID_PARAMETER, "메뉴를 찾을 수 없습니다."));
 
+        List<MenuOptions> menuOptions = menuOptionsRepository.findByMenuId(menu.getId());
 
-        // 가게 영업시간에만 주문 가능
+//         가게 영업시간에만 주문 가능
         LocalTime now = LocalTime.now();
         if (now.isBefore(store.getOpeningTime()) || now.isAfter(store.getClosingTime())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_PARAMETER, "영업시간이 아닙니다.");
         }
 
         // 총 가격
-        int totalPrice = menu.getPrice() * dto.getCount();
+        int totalOptionPrice = menuOptions.stream()
+                .mapToInt(MenuOptions::getPrice)
+                .sum();
+
+        int totalPrice = (menu.getPrice() + totalOptionPrice) * dto.getCount();
 
         // 가게에서 설정한 최소 주문 금액을 만족해야 주문이 가능
         if (totalPrice < store.getMinOrderPrice()) {
