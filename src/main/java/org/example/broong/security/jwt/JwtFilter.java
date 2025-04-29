@@ -12,6 +12,7 @@ import org.example.broong.domain.user.repository.UserRepository;
 import org.example.broong.security.auth.CustomUserDetails;
 import org.example.broong.security.auth.RedisDao;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

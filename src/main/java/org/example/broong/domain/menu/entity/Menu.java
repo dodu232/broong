@@ -7,6 +7,7 @@ import org.example.broong.domain.store.entity.Store;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Entity
 @Getter
